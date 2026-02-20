@@ -209,7 +209,7 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
       <div id="depositStep2" style="display:none; margin-top:10px;">
           <p style="color:#ffcc00; font-size:14px; font-weight:bold;">Paying ₹<span id="payingAmount">0</span></p>
-          <p style="color:#aaa; font-size:12px; line-height:1.5;">Payment app e taka pathanor por, <b>12-digit UTR ba Reference Number</b> ta niche likhe verify koro.</p>
+          <p style="color:#aaa; font-size:12px; line-height:1.5;"> After payment success, <b> Input 12-digit UTR Number</b> Then verify your utr number.</p>
           
           <input type="number" id="utrInput" placeholder="Enter 12-digit UTR No." style="width:100%; padding:12px; border-radius:5px; background:#111; color:#fff; border:1px solid #2e7dff; margin-bottom:15px; box-sizing:border-box; font-size:15px; text-align:center; letter-spacing:2px;">
           
@@ -769,7 +769,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                     <h4 style="margin:10px 0; font-size:14px; color:#FFD700;">Declare Winners (Prize: ₹${winPrize})</h4>
                     <select id="winSelect_${key}" multiple style="width:100%; background:#111; color:#fff; border:1px solid #333; padding:5px; border-radius:5px; height:80px;">${winnerOptions}</select>
                     <p style="font-size:10px; color:#888; margin:5px 0;">*Hold Ctrl/Cmd to select multiple</p>
-                    <button onclick="adminDeclareWinners('${key}', ${winPrize})" class="card-btn" style="padding:10px; background:linear-gradient(45deg, #FFD700, #FFA500); color:#000;">Declare & Pay Winners</button>
+                    <button onclick="adminDeclareWinners('${key}', ${winPrize})" class="card-btn" style="padding:10px; background:linear-gradient(45deg, #FFD700, #FFA500); color:#000; margin-bottom:10px;">Declare & Pay Winners</button>
+                    
+                    <button onclick="adminCancelMatch('${key}')" class="card-btn" style="padding:10px; background:linear-gradient(45deg, #ff0055, #990000); color:#fff; margin-top:0;"><i class="fa-solid fa-ban"></i> Cancel Match & Refund</button>
                 </div>`;
             }
         });
@@ -777,6 +779,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         document.getElementById("adminMatchesSection").innerHTML = html;
     });
  }
+
+
+
 
  function adminSetRoom(key) {
     let id = document.getElementById("roomid_"+key).value; 
@@ -820,7 +825,48 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     });
  }
 
- 
+  function adminCancelMatch(key) {
+    // Prothome Admin ke ekbar warning dewa
+    if(!confirm("Are you sure you want to CANCEL this match? Entry fee will be automatically refunded to all players.")) return;
+
+    db.ref("matches/" + key).once("value", snap => {
+        let matchData = snap.val();
+        
+        // Jodi kono player join na kore thake, tokhon shudhu delete
+        if(!matchData || !matchData.players) {
+            db.ref("matches/" + key).remove();
+            return alert("Match canceled. No players were joined.");
+        }
+
+        let players = Object.values(matchData.players);
+        let entryFee = parseInt(key.split("_")[0]); // Match er key thekei entry fee ber kore nilam
+
+        // Ekta ekta kore shob player-ke taka ferot dewa
+        players.forEach(p => {
+            let safeEmail = safeKey(p.email);
+            let userRef = db.ref("users/" + safeEmail);
+            
+            // Wallet-e taka add
+            userRef.child("wallet").once("value", wSnap => {
+                let bal = wSnap.val() || 0;
+                userRef.child("wallet").set(bal + entryFee); 
+            });
+
+            // History te Refund lekha
+            let historyRef = userRef.child("history").push();
+            historyRef.set({ amount: entryFee, type: "Match Canceled (Refund)", status: "Success", time: new Date().toLocaleString() });
+        });
+
+        // Result page-eo jate shobai dekhte pay match cancel hoyechhe
+        db.ref("results/" + key).set("⚠️ This match was CANCELED by the Admin. \nEntry fees (₹" + entryFee + ") have been successfully refunded to all joined players.");
+        
+        // Sesh-e match ta database theke delete kora
+        db.ref("matches/" + key).remove();
+        
+        alert("Match Canceled Successfully! ₹" + entryFee + " refunded to " + players.length + " players.");
+    });
+ }
+
 
 
  function sendIssue(issueType){
@@ -1008,4 +1054,4 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 </script>
 
 </body>
-              </html>
+</html>
