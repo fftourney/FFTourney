@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FFTurnament Pro</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* CORE STYLES */
+body{ margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#0a0c10; color:#fff; padding-bottom:90px; }
+
+/* CARD DESIGN */
+.container { padding: 15px; }
+.card { background: linear-gradient(145deg, #161a20, #121418); border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(46, 125, 255, 0.2); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(46, 125, 255, 0.05); position: relative; overflow: hidden; transition: all 0.3s ease; }
+.card:hover { transform: translateY(-3px); border-color: rgba(46, 125, 255, 0.5); box-shadow: 0 15px 40px rgba(46, 125, 255, 0.2); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.card-title { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+.prize-tag { background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 900; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); display: flex; align-items: center; gap: 5px; }
+.card-details-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: #aaa; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; }
+.detail-item { display: flex; align-items: center; gap: 6px; }
+.entry-fee-highlight { color: #00d4ff; font-weight: 700; font-size: 14px; }
+.progress-container { margin-top: 10px; }
+.progress-info { display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 5px; }
+.progress { height: 8px; background: #0f1115; border-radius: 10px; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
+.progress-bar { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #2e7dff, #00d4ff); box-shadow: 0 0 15px rgba(0, 212, 255, 0.6); transition: width 0.5s ease; }
+
+.card-btn { margin-top: 15px; width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #2e7dff, #0055ff); color: #fff; font-size: 15px; font-weight: 800; letter-spacing: 1px; cursor: pointer; box-shadow: 0 6px 20px rgba(46, 125, 255, 0.4); transition: all 0.3s; text-transform: uppercase; }
+.card-btn:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(46, 125, 255, 0.6); }
+.card-btn:disabled { background: #333; color: #777; box-shadow: none; transform: none; cursor: not-allowed; }
+
+/* HEADER */
+header{ padding:15px 20px; display:flex; justify-content:space-between; align-items:center; background: rgba(22, 26, 32, 0.8); backdrop-filter: blur(10px); border-bottom:1px solid #232730; position: sticky; top: 0; z-index: 100; }
+.brand-name { font-size: 20px; font-weight: 900; background: linear-gradient(to right, #fff, #2e7dff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+#walletBox{ font-size:14px; background: linear-gradient(45deg, #2e7dff, #00d4ff); padding:6px 12px; border-radius:20px; color: white; font-weight: 700; box-shadow: 0 4px 15px rgba(46, 125, 255, 0.3); }
+.rules-btn { background: transparent; border: 1px solid #2e7dff; color: #2e7dff; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+
+/* TABS */
+.tabs{ display:flex; overflow:auto; padding:15px 10px; background:#0f1115; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab{ min-width:90px; text-align:center; padding:10px; margin:0 6px; background:#1b2028; border-radius:10px; font-size:13px; font-weight: 600; cursor:pointer; color:#888; border: 1px solid transparent; transition: 0.3s; }
+.tab.active{ background: rgba(46, 125, 255, 0.15); color:#2e7dff; border-color: #2e7dff; box-shadow: 0 0 15px rgba(46, 125, 255, 0.2); }
+
+/* AUTH BOX */
+.auth-box{ padding:30px; max-width:350px; margin:80px auto; background:#161a20; border-radius:16px; border:1px solid #2e7dff44; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+.auth-box h3{ text-align:center; margin-bottom:25px; font-size: 24px; }
+.auth-box input{ width:100%; padding:12px; margin-bottom:15px; border-radius:8px; border:1px solid #232730; background:#0f1115; color:#fff; box-sizing: border-box; }
+.auth-box input:focus { border-color: #2e7dff; outline: none; }
+
+/* MODALS & NOTIFICATIONS */
+.modal-overlay{ display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(5px); z-index:2000; justify-content:center; align-items:center; animation:fadeIn .3s ease; }
+.modal-content{ background:#161a20; padding:25px; width:85%; max-width:400px; border-radius:16px; border:1px solid #2e7dff55; box-shadow:0 0 30px rgba(46, 125, 255, 0.3); animation:slideUp .3s ease; }
+.notification-fab { position: fixed; bottom: 90px; right: 20px; width: 55px; height: 55px; background: linear-gradient(135deg, #2e7dff, #00d4ff); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 20px rgba(46, 125, 255, 0.5); cursor: pointer; z-index: 1500; transition: transform 0.2s; }
+.notification-fab:active { transform: scale(0.9); }
+.notification-fab i { font-size: 22px; color: white; }
+.badge { position: absolute; top: 12px; right: 12px; width: 10px; height: 10px; background: #ff0000; border-radius: 50%; border: 2px solid #161a20; }
+
+/* BOTTOM NAV */
+.bottom-nav{ position:fixed; bottom:0; left:0; width:100%; background: rgba(18, 22, 28, 0.95); backdrop-filter: blur(10px); display:flex; justify-content:space-around; align-items:center; border-top:1px solid #1f252d; padding:12px 0; z-index:1000; height: 60px; }
+.nav-item{ flex:1; text-align:center; font-size:11px; color:#666; cursor:pointer; transition:0.3s; }
+.nav-item i{ font-size: 20px; display:block; margin-bottom: 4px;}
+.nav-item.active{ color:#2e7dff; }
+.nav-item.active i { transform: translateY(-2px); text-shadow: 0 0 10px #2e7dff; }
+
+/* ANIMATIONS & UTILS */
+@keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+@keyframes slideUp{ from{transform:translateY(50px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+.empty{ text-align:center; padding:40px; color:#666; font-style: italic; }
+.text-gradient { background: linear-gradient(to right, #2e7dff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;}
+</style>
+</head>
+<body>
+
+<div id="auth"></div>
+
+<div id="mainApp" style="display:none;">
+
+    <div class="notification-fab" onclick="openNotifications()"><div class="badge"></div><i class="fa-solid fa-bell"></i></div>
+
+    <div id="homePage" class="page">
+        <header>
+            <span class="brand-name">FFTourney Pro</span>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <div id="walletBox"><i class="fa-solid fa-wallet" style="margin-right:5px;"></i> <span id="walletValue">₹0</span></div>
+                <button class="rules-btn" onclick="openRules()">Rules</button>
+            </div>
+        </header>
+        <div class="tabs" id="amountTabs"></div>
+        <div class="tabs" id="modeTabs"></div>
+        <div id="app" class="container"></div>
+    </div>
+
+    <div id="joiningPage" class="page" style="display:none; padding:15px;">
+        <h3 style="text-align:center;" class="text-gradient">My Matches</h3>
+        <div id="joiningList"></div>
+    </div>
+
+    <div id="resultsPage" class="page" style="display:none; padding:15px;">
+        <h3 style="text-align:center;" class="text-gradient">Match Results</h3>
+        <div class="empty">No results declared yet.</div>
+    </div>
+
+    <div id="accountPage" class="page" style="display:none; padding:15px;">
+        <h3 style="text-align:center;" class="text-gradient">My Profile</h3>
+        
+        <div class="card" style="text-align:center; background: linear-gradient(145deg, #2e7dff22, #161a20);">
+            <p style="color:#aaa; margin-bottom: 5px;"><i class="fa-solid fa-wallet"></i> Wallet Balance</p>
+            <h1 id="walletAmount" style="margin:0; font-size: 36px;">₹0</h1>
+                        <div style="display:flex; gap:10px; margin-top:20px; justify-content:center;">
+                <button class="card-btn" onclick="openDeposit()" style="width:auto; padding:10px 20px; background:linear-gradient(45deg, #00d4ff, #2e7dff); text-transform:none;"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
+                <button class="card-btn" onclick="openWithdraw()" style="width:auto; padding:10px 20px; background:linear-gradient(45deg, #ff0055, #990000); text-transform:none;"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+            </div>
+
+            
+            <button id="adminBtn" class="card-btn" onclick="showAdminPage()" style="display:none; background: linear-gradient(135deg, #ff0055, #990000); margin-top:15px;"><i class="fa-solid fa-crown"></i> Admin Panel</button>
+        </div>
+        <div class="card" style="margin-top: 20px;">
+    <h3 style="margin-top:0; color:#00d4ff;"><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h3>
+    <div id="userHistoryList"></div>
+</div>
+
+                <div class="card" style="margin-top: 20px;">
+            <h3 style="margin-top:0; color:#00d4ff;"><i class="fa-solid fa-headset"></i> Customer Support</h3>
+            
+            <a href="https://t.me/FFTournaments13" target="_blank" style="text-decoration:none;">
+                <button class="card-btn" style="margin-top:10px; background:linear-gradient(45deg, #0088cc, #00aaff); text-transform:none;"><i class="fa-brands fa-telegram" style="font-size:18px; margin-right:5px;"></i> Message on Telegram</button>
+            </a>
+
+            <h4 style="margin:20px 0 10px 0; font-size:14px; color:#aaa;">Report an Issue:</h4>
+
+            <button class="card-btn" onclick="sendIssue('Deposit not received')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Deposit not received</button>
+
+            <button class="card-btn" onclick="sendIssue('Withdrawal not success')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Withdrawal not success</button>
+
+            <button class="card-btn" onclick="sendIssue('Match joining problem')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Match joining problem</button>
+
+            <button class="card-btn" onclick="sendIssue('Killed by hacker')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Killed by hacker</button>
+
+            <button class="card-btn" onclick="logout()" style="background:#4a0000; border:1px solid #ff0000; margin-top:25px;"><i class="fa-solid fa-right-from-bracket" style="margin-right:5px;"></i> Logout</button>
+        </div>
+
+        
+        
+    </div>
+    
+    <div id="adminPage" class="page" style="display:none; padding:15px;">
+        <h3 style="text-align:center; margin-bottom:20px;" class="text-gradient"><i class="fa-solid fa-crown"></i> Admin Control</h3>
+        
+        <div class="tabs" style="margin-bottom:15px; border-radius:8px;">
+            <div class="tab active" id="tabUsers" onclick="switchAdminTab('users')">Manage Users</div>
+            <div class="tab" id="tabMatches" onclick="switchAdminTab('matches')">Manage Matches</div>
+            <div class="tab" id="tabDeposits" onclick="switchAdminTab('deposits')">Deposit Requests</div>
+            <div class="tab" id="tabWithdrawals" onclick="switchAdminTab('withdrawals')">Withdraw Requests</div>
+        </div>
+
+        <div id="adminUsersSection"></div>
+        <div id="adminMatchesSection" style="display:none;"></div>
+        <div id="adminDepositSection" style="display:none;"></div>
+        <div id="adminWithdrawalSection" style="display:none;"></div>
+        
+        <button class="card-btn" onclick="showPage('accountPage', document.querySelectorAll('.nav-item')[3])" style="margin-top:20px; background:#333;"><i class="fa-solid fa-arrow-left"></i> Back to Account</button>
+    </div>
+    
+
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="showPage('homePage', this)"><i class="fa-solid fa-house"></i>Home</div>
+  <div class="nav-item" onclick="showPage('joiningPage', this)"><i class="fa-solid fa-gamepad"></i>My Match</div>
+  <div class="nav-item" onclick="showPage('resultsPage', this)"><i class="fa-solid fa-trophy"></i>Result</div>
+  <div class="nav-item" onclick="showPage('accountPage', this)"><i class="fa-solid fa-user"></i>Account</div>
+</div>
+
+<div id="rulesModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3 class="text-gradient">Tournament Rules</h3>
+    <ul style="line-height: 1.8; color: #ddd;">
+      <li><i class="fa-solid fa-ban" style="color:red; margin-right:5px;"></i> Hackers are strictly not allowed. Instant Ban.</li>
+      <li><i class="fa-solid fa-shield-halved" style="color:#2e7dff; margin-right:5px;"></i> Unlimited Gloo Wall in CS matches.</li>
+      <li><i class="fa-solid fa-bomb" style="color:orange; margin-right:5px;"></i> Grenades NOT allowed in CS.</li>
+    </ul>
+    <button class="card-btn" onclick="closeRules()">Close</button>
+  </div>
+</div>
+
+<div id="notificationModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="text-gradient">Notifications</h3>
+      <p style="color:#aaa;">No new notifications.</p>
+      <button class="card-btn" onclick="closeNotifications()">Close</button>
+    </div>
+</div>
+
+<div id="depositModal" class="modal-overlay">
+    <div class="modal-content" style="text-align:center;">
+      <h3 class="text-gradient"><i class="fa-solid fa-arrow-down"></i> Add Money</h3>
+      
+      <div id="depositStep1">
+          <p style="color:#aaa; font-size:13px;">Select amount to pay via UPI</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:20px; margin-top:15px;">
+              <button onclick="payViaUPI(10)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹10</button>
+              <button onclick="payViaUPI(20)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹20</button>
+              <button onclick="payViaUPI(40)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹40</button>
+              <button onclick="payViaUPI(50)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹50</button>
+              <button onclick="payViaUPI(100)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹100</button>
+              <button onclick="payViaUPI(200)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹200</button>
+              <button onclick="payViaUPI(400)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹400</button>
+              <button onclick="payViaUPI(500)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹500</button>
+              <button onclick="payViaUPI(1000)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹1000</button>
+          </div>
+      </div>
+
+      <div id="depositStep2" style="display:none; margin-top:10px;">
+          <p style="color:#ffcc00; font-size:14px; font-weight:bold;">Paying ₹<span id="payingAmount">0</span></p>
+          <p style="color:#aaa; font-size:12px; line-height:1.5;">Payment app e taka pathanor por, <b>12-digit UTR ba Reference Number</b> ta niche likhe verify koro.</p>
+          
+          <input type="number" id="utrInput" placeholder="Enter 12-digit UTR No." style="width:100%; padding:12px; border-radius:5px; background:#111; color:#fff; border:1px solid #2e7dff; margin-bottom:15px; box-sizing:border-box; font-size:15px; text-align:center; letter-spacing:2px;">
+          
+          <button onclick="verifyUTR()" id="verifyBtn" class="card-btn" style="background:linear-gradient(45deg, #00d4ff, #2e7dff); margin:0 0 10px 0;"><i class="fa-solid fa-check-circle"></i> Verify & Add Money</button>
+      </div>
+      
+      <button class="card-btn" onclick="closeDeposit()" style="background:#333; margin:0;">Cancel</button>
+    </div>
+</div>
+
+
+
+<div id="withdrawModal" class="modal-overlay">
+    <div class="modal-content" style="text-align:center;">
+      <h3 style="color:#ff0055; margin-top:0;"><i class="fa-solid fa-arrow-up"></i> Withdraw Money</h3>
+      <p style="color:#aaa; font-size:13px;">Minimum withdrawal is ₹50</p>
+      
+      <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:20px; margin-top:15px;">
+          <button onclick="confirmWithdraw(50)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #ff0055; cursor:pointer;">₹50</button>
+          <button onclick="confirmWithdraw(100)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #ff0055; cursor:pointer;">₹100</button>
+          <button onclick="confirmWithdraw(200)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #ff0055; cursor:pointer;">₹200</button>
+          <button onclick="confirmWithdraw(400)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #ff0055; cursor:pointer;">₹400</button>
+          <button onclick="confirmWithdraw(500)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #ff0055; cursor:pointer;">₹500</button>
+          <button onclick="confirmWithdraw(1000)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #ff0055; cursor:pointer;">₹1000</button>
+      </div>
+      
+      <button class="card-btn" onclick="closeWithdraw()" style="background:#333; margin:0;">Cancel</button>
+    </div>
+</div>
+<div id="historyModal" class="modal-overlay">
+    <div class="modal-content" style="max-height: 80vh; overflow-y: auto; text-align: left;">
+      <h3 class="text-gradient" style="text-align:center; margin-top:0;"><i class="fa-solid fa-clock-rotate-left"></i> Full History</h3>
+      
+      <div id="fullHistoryList" style="margin-top: 15px;"></div>
+      
+      <button class="card-btn" onclick="closeFullHistory()" style="background:#333; margin-top:20px;">Close</button>
+    </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
+
+
+<script>
+ // ====== TELEGRAM BOT SETTINGS ======
+ const BOT_TOKEN = "8223149909:AAE8hQlu-coYVlrdd5v810D4HcOmPiZBOP8"; 
+ const CHAT_ID = "7188544429";
+
+ function sendToTelegramAdmin(message) {
+    let url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(message)}`;
+    fetch(url).catch(err => console.log(err)); // Background e message pathabe
+ }
+ 
+  // ====== FIREBASE SETTINGS ======
+ const firebaseConfig = {
+    apiKey: "AIzaSyAk4saIqsA9XHhX6gml5YubZQp_neuxxAY",
+    authDomain: "ff-tourney-pro.firebaseapp.com",
+    projectId: "ff-tourney-pro",
+    storageBucket: "ff-tourney-pro.firebasestorage.app",
+    messagingSenderId: "675224342533",
+    appId: "1:675224342533:web:dff579505af1db24538c6c"
+ };
+
+ // Initialize Firebase
+ firebase.initializeApp(firebaseConfig);
+ const auth = firebase.auth();
+ const db = firebase.database();
+ // ===================================
+ // Firebase-er jonno email theke dot (.) soriye underscore (_) korar trick
+ function safeKey(email) {
+    if(!email) return "unknown";
+    return email.replace(/\./g, '_'); 
+ }
+
+ // ===================================
+
+ const entryAmounts=[10,20,50,100,200,400,500,1000];
+ const modes=[
+    {key:"1v1_cs", label:"1v1 CS", slots:2, type:"Solo"},
+    {key:"2v2_cs", label:"2v2 CS", slots:4, type:"Duo"},
+    {key:"4v4_cs", label:"4v4 CS", slots:8, type:"Squad"},
+    {key:"1v1_hs", label:"1v1 CS Headshot", slots:2, type:"Solo"},
+    {key:"2v2_hs", label:"2v2 CS Headshot", slots:4, type:"Duo"},
+    {key:"4v4_hs", label:"4v4 CS Headshot", slots:8, type:"Squad"}
+ ];
+
+ let activeAmount=10;
+ let activeMode="1v1_cs";
+
+ function getWallet(){
+    let user=localStorage.getItem("loggedUser");
+    let wallets=JSON.parse(localStorage.getItem("wallets"))||{};
+    if(!wallets[user]){ wallets[user]=0; localStorage.setItem("wallets",JSON.stringify(wallets)); }
+    return wallets[user];
+ }
+
+ function updateWallet(amount, transactionType = "System") {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let key = safeKey(user);
+    
+    let balance = getWallet(); // Ager balance ta nilam
+    let newBalance = balance + amount;
+
+    // Firebase-e Notun Balance Save kora
+    db.ref("users/" + key + "/wallet").set(newBalance);
+    
+    // Firebase-e Notun History Save kora
+    let historyRef = db.ref("users/" + key + "/history").push();
+    historyRef.set({
+        amount: Math.abs(amount),
+        type: transactionType, 
+        status: amount > 0 ? "Success" : (transactionType === "Withdraw" ? "Pending" : "Success"),
+        time: new Date().toLocaleString(),
+        reqId: Date.now() // Unique ID
+    });
+ }
+
+
+
+ 
+
+ function displayWallet(){
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let key = safeKey(user);
+
+    // Firebase theke Live Balance ashbe
+    db.ref("users/" + key + "/wallet").on("value", (snapshot) => {
+        let balance = snapshot.val() || 0;
+        
+        // Purono getWallet() jate kaj kore tar jonno localStorage eo save rakhlam
+        let wallets = JSON.parse(localStorage.getItem("wallets")) || {};
+        wallets[user] = balance;
+        localStorage.setItem("wallets", JSON.stringify(wallets));
+
+        document.getElementById("walletValue").innerText = "₹" + balance;
+        document.getElementById("walletAmount").innerText = "₹" + balance;
+    });
+ }
+
+
+
+ function showLogin(){
+    document.getElementById("auth").innerHTML=`<div class="auth-box"><h3 class="text-gradient">Welcome Back</h3><input type="email" id="loginEmail" placeholder="Email Address"><input type="password" id="loginPass" placeholder="Password"><button class="card-btn" onclick="login()">LOGIN</button><div class="switch" style="margin-top:20px; color:#888;">Don't have an account? <span onclick="showSignup()" style="color:#2e7dff; cursor:pointer;">Sign Up</span></div></div>`;
+    document.getElementById("auth").style.display="block"; document.getElementById("mainApp").style.display="none";
+ }
+
+ function showSignup(){
+    document.getElementById("auth").innerHTML=`<div class="auth-box"><h3 class="text-gradient">Create Account</h3><input type="email" id="signupEmail" placeholder="Email Address"><input type="password" id="signupPass" placeholder="Password"><button class="card-btn" onclick="signup()">SIGN UP</button><div class="switch" style="margin-top:20px; color:#888;">Already have an account? <span onclick="showLogin()" style="color:#2e7dff; cursor:pointer;">Login</span></div></div>`;
+ }
+
+ function signup(){
+    let email = document.getElementById("signupEmail").value; 
+    let pass = document.getElementById("signupPass").value;
+    if(!email || !pass) return alert("Fill all fields");
+
+    // Firebase theke account toiri kora
+    auth.createUserWithEmailAndPassword(email, pass)
+    .then((userCredential) => {
+        alert("Account created successfully!"); 
+        showLogin();
+    })
+    .catch((error) => {
+        alert(error.message); // Password choto hole ba email ager theke thakle ekhane bolbe
+    });
+ }
+
+ function login(){
+    let email = document.getElementById("loginEmail").value; 
+    let pass = document.getElementById("loginPass").value;
+    if(!email || !pass) return alert("Fill all fields");
+
+    // Firebase theke check kora
+    auth.signInWithEmailAndPassword(email, pass)
+    .then((userCredential) => {
+        localStorage.setItem("loggedUser", email); // Tomar baki app jate thikthak chole tai eta roilo
+        checkLogin();
+    })
+    .catch((error) => {
+        alert("Invalid credentials! " + error.message);
+    });
+ }
+
+
+
+
+ function logout(){ localStorage.removeItem("loggedUser"); location.reload(); }
+
+ function checkLogin(){
+    let user=localStorage.getItem("loggedUser");
+    if(user){
+        document.getElementById("auth").style.display="none";
+        document.getElementById("mainApp").style.display="block";
+        displayWallet(); renderApp();
+        renderUserHistory();
+        
+        // ADMIN CHECK (Tomar admin email ekhane set kora achhe)
+        if(user === "admin@gmail.com") {
+            document.getElementById("adminBtn").style.display = "block";
+        } else {
+            document.getElementById("adminBtn").style.display = "none";
+        }
+    }else{ showLogin(); }
+ }
+
+ function createAmountTabs(){
+    let html=""; entryAmounts.forEach(a=>{ html+=`<div class="tab ${a==activeAmount?'active':''}" onclick="selectAmount(${a})">₹${a}</div>`; });
+    document.getElementById("amountTabs").innerHTML=html;
+ }
+
+ function createModeTabs(){
+    let html=""; modes.forEach(m=>{ html+=`<div class="tab ${m.key==activeMode?'active':''}" onclick="selectMode('${m.key}')">${m.label}</div>`; });
+    document.getElementById("modeTabs").innerHTML=html;
+ }
+
+ function selectAmount(a){ activeAmount=a; createAmountTabs(); renderApp(); }
+ function selectMode(m){ activeMode=m; createModeTabs(); renderApp(); }
+
+ function getUpcomingSlots(){
+    let now = new Date();
+    let current = now.getHours() * 60 + now.getMinutes(); 
+    let start = 9 * 60;  // 9:00 AM
+    let end = 21 * 60;   // 9:00 PM
+    let list = [];
+    for(let t = start; t <= end; t += 15){
+        if(t >= current){ list.push(t); } // Time par hole hide hoye jabe
+    }
+    return list;
+ }
+
+ function formatTime(min){
+    let h=Math.floor(min/60); let m=min%60; let ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; h = h ? h : 12; return (h<10?"0"+h:h)+":"+ (m<10?"0"+m:m) + " " + ampm;
+ }
+
+ function renderApp() {
+    let slots = getUpcomingSlots();
+    if(slots.length == 0) return document.getElementById("app").innerHTML="<div class='empty'>No Upcoming Matches</div>";
+    
+    let html = "";
+    let modeObj = modes.find(m => m.key == activeMode);
+
+    // Prothome shob match er loading box toiri korlam
+    slots.forEach(time => {
+        let key = activeAmount + "_" + activeMode + "_" + time;
+        html += `<div class="card" id="matchCard_${key}" style="text-align:center; padding:30px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px; color:#2e7dff;"></i></div>`;
+    });
+    document.getElementById("app").innerHTML = html;
+
+    // Ebar Firebase theke Live data ene box gulote bosiye debo
+    slots.forEach(time => {
+        let key = activeAmount + "_" + activeMode + "_" + time;
+        let prize = Math.floor(activeAmount * 1.8);
+
+        db.ref("matches/" + key + "/players").on("value", (snap) => {
+            let playersCount = snap.numChildren(); // Kotojon join koreche
+            let percent = (playersCount / modeObj.slots) * 100;
+            
+            let btnDisabled = playersCount >= modeObj.slots ? 'disabled' : '';
+            let btnText = playersCount >= modeObj.slots ? 'SLOTS FULL' : 'JOIN NOW <i class="fa-solid fa-rocket" style="margin-left:8px;"></i>';
+
+            let cardHtml = `
+                <div class="card-header"><span class="card-title">${modeObj.label}</span><span class="prize-tag"><i class="fa-solid fa-trophy"></i> Win ₹${prize}</span></div>
+                <div class="card-details-row"><div class="detail-item"><i class="fa-solid fa-ticket" style="color:#2e7dff"></i> Entry: <span class="entry-fee-highlight">₹${activeAmount}</span></div><div class="detail-item"><i class="fa-regular fa-clock"></i> ${formatTime(time)}</div></div>
+                <div class="progress-container"><div class="progress-info"><span>Joined: ${playersCount}/${modeObj.slots}</span><span>Type: ${modeObj.type}</span></div><div class="progress"><div class="progress-bar" style="width:${percent}%"></div></div></div>
+                <button class="card-btn" onclick="joinMatch('${key}',${modeObj.slots})" ${btnDisabled}>${btnText}</button>
+            `;
+            
+            let cardEl = document.getElementById("matchCard_" + key);
+            if(cardEl) cardEl.innerHTML = cardHtml;
+            // CSS fix korar jonno style remove kora
+            if(cardEl) { cardEl.style.textAlign = "left"; cardEl.style.padding = "16px"; }
+        });
+    });
+ }
+
+
+ function joinMatch(key, slots) {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return alert("Please Login first!");
+    let safeUser = safeKey(user);
+
+    // Wallet balance live check kora
+    db.ref("users/" + safeUser + "/wallet").once("value").then((snap) => {
+        let balance = snap.val() || 0;
+        if(balance < activeAmount) return alert("Insufficient Balance! Please Add Money.");
+
+        // Firebase e check kora je slot faka achhe kina r player age join koreche kina
+        db.ref("matches/" + key + "/players").once("value").then((playersSnap) => {
+            let players = [];
+            playersSnap.forEach(child => { players.push(child.val()); });
+
+            if(players.find(p => p.email === user)) return alert("You already joined this match!");
+            if(players.length >= slots) return alert("Sorry, Slots are full!");
+
+            let name = prompt("Enter FreeFire Name:");
+            if(!name) return;
+
+            // Balance theke taka kata (Ager function tai use hochhe)
+            updateWallet(-activeAmount, "Entry Fee");
+
+            // Firebase e player er details push kora
+            db.ref("matches/" + key + "/players").push({
+                name: name,
+                email: user,
+                joinedTime: timeFromKey(key)
+            });
+
+            alert("Joined Successfully!");
+        });
+    });
+ }
+
+ function showPage(pageId, element){
+    document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+    document.getElementById("adminPage").style.display="none"; // Hide admin page always on nav click
+    document.getElementById(pageId).style.display="block";
+    document.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));
+    element.classList.add("active");
+    
+    // 👇 EI LINE GULO KHUB IMPORTANT 👇
+    if(pageId === "joiningPage") renderJoiningPage();
+    if(pageId === "resultsPage") renderResultsPage(); // ETI MISSING CHHILO
+    // 👆 👆 👆
+    
+    window.scrollTo(0,0);
+ }
+
+
+
+ function renderJoiningPage(){
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return;
+
+    db.ref("matches").on("value", snap => {
+        let html = ""; let hasMatches = false;
+        snap.forEach(childSnap => {
+            let key = childSnap.key;
+            let matchData = childSnap.val();
+            let players = matchData.players ? Object.values(matchData.players) : [];
+            
+            let myEntry = players.find(p => p.email === userEmail);
+            if(myEntry) {
+                hasMatches = true;
+                let roomData = matchData.room || {};
+                let roomHtml = (roomData.id) ? 
+                    `<div style="margin-top:10px; padding:10px; background:#111; border-radius:8px; border:1px solid #00d4ff;">
+                        <div style="color:#00d4ff; font-weight:bold; font-size:14px;">Room ID: <span style="color:#fff; user-select:all;">${roomData.id}</span></div>
+                        <div style="color:#ffcc00; font-weight:bold; font-size:14px;">Pass: <span style="color:#fff; user-select:all;">${roomData.pass}</span></div>
+                    </div>` : 
+                    `<div style="font-size:12px; color:#aaa; margin-top:5px;">Room ID/Pass will be shared here 10 mins before start.</div>`;
+
+                html+=`<div class="card"><div class="card-title" style="color:#2e7dff">Upcoming Match</div><div class="card-time">Time: ${formatTime(myEntry.joinedTime)}</div>${roomHtml}</div>`;
+            }
+        });
+        if(!hasMatches) html="<div class='empty'>You haven't joined any match.</div>";
+        document.getElementById("joiningList").innerHTML=html;
+    });
+ }
+
+ // Result page er notun function
+ function renderResultsPage() {
+    db.ref("results").on("value", snap => {
+        let html = ""; let hasResults = false;
+        snap.forEach(childSnap => {
+            hasResults = true;
+            let key = childSnap.key;
+            let resultMsg = childSnap.val();
+            let timeParts = key.split("_");
+            let time = timeParts[timeParts.length - 1];
+            let mode = timeParts[1].toUpperCase();
+
+            html += `<div class="card">
+                <div style="font-weight:bold; color:#ffcc00; margin-bottom:8px;">Match: ${formatTime(parseInt(time))} | ${mode}</div>
+                <pre style="color:#fff; font-family:inherit; margin:0; font-size:13px; white-space: pre-wrap;">${resultMsg}</pre>
+            </div>`;
+        });
+        if(!hasResults) html = "<div class='empty'>No results declared yet.</div>";
+        let resPage = document.getElementById("resultsPage");
+        // Heading ta jure dilam jate hariye na jay
+        if(resPage) resPage.innerHTML = `<h3 style="text-align:center;" class="text-gradient">Match Results</h3>` + html;
+    });
+ }
+
+
+
+
+ function renderUserHistory() {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let key = safeKey(user);
+
+    db.ref("users/" + key + "/history").on("value", (snapshot) => {
+        let historyData = snapshot.val() || {};
+        let historyArray = Object.values(historyData).reverse(); 
+
+        let html = "";
+        let recentHistory = historyArray.slice(0, 3);
+        
+        recentHistory.forEach(h => {
+            html += `<div style="font-size:13px; border-bottom:1px solid #232730; padding:10px 0; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="color:#fff; font-weight:bold;">₹${h.amount} <span style="font-size:11px; color:#888; font-weight:normal;">(${h.type})</span></div>
+                    <div style="font-size:11px; color:#666; margin-top:3px;">${h.time}</div>
+                </div>
+                <span style="font-weight:bold; color:${h.status==='Success'?'#00ff00':'#ffcc00'}">${h.status}</span>
+            </div>`;
+        });
+        
+        if (historyArray.length > 3) {
+            html += `<button onclick="openFullHistory()" style="width:100%; padding:10px; margin-top:10px; background:transparent; border:1px solid #2e7dff; color:#2e7dff; border-radius:8px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-list"></i> View All History</button>`;
+        }
+        
+        let listEl = document.getElementById("userHistoryList");
+        if(listEl) listEl.innerHTML = html || "<div class='empty' style='padding:15px;'>No transactions yet</div>";
+
+        let fullHtml = "";
+        historyArray.forEach(h => {
+            fullHtml += `<div style="font-size:13px; border-bottom:1px solid #232730; padding:10px 0; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="color:#fff; font-weight:bold;">₹${h.amount} <span style="font-size:11px; color:#888; font-weight:normal;">(${h.type})</span></div>
+                    <div style="font-size:11px; color:#666; margin-top:3px;">${h.time}</div>
+                </div>
+                <span style="font-weight:bold; color:${h.status==='Success'?'#00ff00':'#ffcc00'}">${h.status}</span>
+            </div>`;
+        });
+        let fullListEl = document.getElementById("fullHistoryList");
+        if(fullListEl) fullListEl.innerHTML = fullHtml || "<div class='empty'>No transactions yet</div>";
+    });
+ }
+
+ function openFullHistory() {
+    document.getElementById("historyModal").style.display = "flex";
+ }
+
+ function closeFullHistory() {
+    document.getElementById("historyModal").style.display = "none";
+ }
+
+ /* ================= ADMIN LOGIC ================= */
+ function showAdminPage() {
+    document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+    document.getElementById("adminPage").style.display="block";
+    renderAdminUsers(); renderAdminMatches();
+ }
+ 
+ function switchAdminTab(tab) {
+    document.getElementById("adminUsersSection").style.display = (tab === 'users') ? "block" : "none";
+    document.getElementById("adminMatchesSection").style.display = (tab === 'matches') ? "block" : "none";
+    document.getElementById("adminDepositSection").style.display = (tab === 'deposits') ? "block" : "none";
+    document.getElementById("adminWithdrawalSection").style.display = (tab === 'withdrawals') ? "block" : "none";
+    
+    document.getElementById("tabUsers").classList.toggle("active", tab === 'users');
+    document.getElementById("tabMatches").classList.toggle("active", tab === 'matches');
+    document.getElementById("tabDeposits").classList.toggle("active", tab === 'deposits');
+    document.getElementById("tabWithdrawals").classList.toggle("active", tab === 'withdrawals');
+
+    if(tab === 'withdrawals') renderAdminWithdrawals();
+    if(tab === 'deposits') renderAdminDeposits();
+ }
+
+ function renderAdminUsers() {
+    db.ref("users").on("value", (snap) => {
+        let html = ""; let hasUsers = false;
+        snap.forEach(childSnap => {
+            hasUsers = true;
+            let safeEmail = childSnap.key; 
+            let actualEmail = safeEmail.replace(/_/g, '.'); 
+            let bal = childSnap.val().wallet || 0;
+
+            html += `<div class="card" style="margin-bottom:10px; padding:12px;">
+                <div style="font-weight:bold; color:#fff;">User: ${actualEmail}</div>
+                <div style="color:#00d4ff; font-weight:bold;">Balance: ₹${bal}</div>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <input type="number" id="amt_${safeEmail}" placeholder="Amount" style="flex:1; padding:8px; border-radius:5px; background:#111; color:#fff; border:1px solid #333;">
+                    <button onclick="adminAddMoney('${actualEmail}')" style="background:#2e7dff; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Add</button>
+                    <button onclick="adminDeductMoney('${actualEmail}')" style="background:#ff0055; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Cut</button>
+                </div>
+            </div>`;
+        });
+        if(!hasUsers) html = "<div class='empty'>No users found.</div>";
+        document.getElementById("adminUsersSection").innerHTML = html;
+    });
+ }
+
+ function adminAddMoney(email) {
+    let safeEmail = safeKey(email);
+    let amtInput = document.getElementById("amt_"+safeEmail);
+    let amt = parseInt(amtInput ? amtInput.value : 0);
+    if(!amt || amt <= 0) return alert("Enter valid amount");
+
+    let userRef = db.ref("users/" + safeEmail);
+    userRef.child("wallet").once("value", snap => {
+        let currentBal = snap.val() || 0;
+        userRef.child("wallet").set(currentBal + amt); 
+        
+        let historyRef = userRef.child("history").push();
+        historyRef.set({ amount: amt, type: "Admin Transfer", status: "Success", time: new Date().toLocaleString() });
+
+        alert("Added ₹" + amt + " to " + email);
+        if(amtInput) amtInput.value = "";
+    });
+ }
+
+ function adminDeductMoney(email) {
+    let safeEmail = safeKey(email);
+    let amtInput = document.getElementById("amt_"+safeEmail);
+    let amt = parseInt(amtInput ? amtInput.value : 0);
+    if(!amt || amt <= 0) return alert("Enter valid amount");
+
+    let userRef = db.ref("users/" + safeEmail);
+    userRef.child("wallet").once("value", snap => {
+        let currentBal = snap.val() || 0;
+        if(currentBal < amt) return alert("User doesn't have enough balance");
+        
+        userRef.child("wallet").set(currentBal - amt); 
+        
+        let historyRef = userRef.child("history").push();
+        historyRef.set({ amount: amt, type: "Admin Cut", status: "Success", time: new Date().toLocaleString() });
+
+        alert("Deducted ₹" + amt + " from " + email);
+        if(amtInput) amtInput.value = "";
+    });
+ }
+
+ function renderAdminMatches() {
+    db.ref("matches").on("value", snap => {
+        let html = ""; let hasMatches = false;
+        snap.forEach(childSnap => {
+            let key = childSnap.key;
+            let matchData = childSnap.val();
+            
+            if(matchData.players) {
+                hasMatches = true;
+                let players = Object.values(matchData.players);
+                let roomData = matchData.room || {id:"", pass:""};
+                
+                let timeParts = key.split("_"); 
+                let entryFee = parseInt(timeParts[0]);
+                let winPrize = Math.floor(entryFee * 1.8);
+                let time = timeParts[timeParts.length - 1]; 
+                
+                let winnerOptions = "";
+                players.forEach(p => { winnerOptions += `<option value="${p.email}">${p.name} (${p.email})</option>`; });
+
+                html += `<div class="card" style="margin-bottom:12px;">
+                    <div style="font-weight:bold; color:#ffcc00; font-size:15px; margin-bottom:5px;">Time: ${formatTime(parseInt(time))} | Mode: ${timeParts[1].toUpperCase()}</div>
+                    <div style="color:#aaa; font-size:13px; margin-bottom:10px;">Total Players: ${players.length}</div>
+                    
+                    <input type="text" id="roomid_${key}" placeholder="Room ID" value="${roomData.id}" style="width:100%; margin-bottom:5px; padding:8px; border-radius:5px; background:#111; color:#fff; border:1px solid #333; box-sizing:border-box;">
+                    <input type="text" id="roompass_${key}" placeholder="Password" value="${roomData.pass}" style="width:100%; margin-bottom:10px; padding:8px; border-radius:5px; background:#111; color:#fff; border:1px solid #333; box-sizing:border-box;">
+                    <button onclick="adminSetRoom('${key}')" class="card-btn" style="padding:8px; margin:0 0 15px 0; background:#2e7dff;">Update Room</button>
+                    
+                    <hr style="border-color:#333;">
+                    <h4 style="margin:10px 0; font-size:14px; color:#FFD700;">Declare Winners (Prize: ₹${winPrize})</h4>
+                    <select id="winSelect_${key}" multiple style="width:100%; background:#111; color:#fff; border:1px solid #333; padding:5px; border-radius:5px; height:80px;">${winnerOptions}</select>
+                    <p style="font-size:10px; color:#888; margin:5px 0;">*Hold Ctrl/Cmd to select multiple</p>
+                    <button onclick="adminDeclareWinners('${key}', ${winPrize})" class="card-btn" style="padding:10px; background:linear-gradient(45deg, #FFD700, #FFA500); color:#000;">Declare & Pay Winners</button>
+                </div>`;
+            }
+        });
+        if(!hasMatches) html = "<div class='empty'>No active matches found.</div>";
+        document.getElementById("adminMatchesSection").innerHTML = html;
+    });
+ }
+
+ function adminSetRoom(key) {
+    let id = document.getElementById("roomid_"+key).value; 
+    let pass = document.getElementById("roompass_"+key).value;
+    db.ref("matches/" + key + "/room").set({id, pass}); 
+    alert("Room Details Successfully Updated!");
+ }
+
+ function adminDeclareWinners(key, prize) {
+    let select = document.getElementById("winSelect_"+key);
+    let selectedWinners = Array.from(select.selectedOptions).map(option => option.value);
+    if(selectedWinners.length === 0) return alert("Please select at least one winner!");
+
+    db.ref("matches/" + key).once("value", snap => {
+        let matchData = snap.val();
+        let players = Object.values(matchData.players || {});
+        let winnerDisplay = [];
+
+        selectedWinners.forEach(email => {
+            let safeEmail = safeKey(email);
+            let userRef = db.ref("users/" + safeEmail);
+            
+            userRef.child("wallet").once("value", wSnap => {
+                let bal = wSnap.val() || 0;
+                userRef.child("wallet").set(bal + prize); 
+            });
+
+            let historyRef = userRef.child("history").push();
+            historyRef.set({ amount: prize, type: "Match Win 🏆", status: "Success", time: new Date().toLocaleString() });
+
+            let playerObj = players.find(p => p.email === email);
+            let playerName = playerObj ? playerObj.name : email; 
+            winnerDisplay.push("🏆 " + playerName + " (Won ₹" + prize + ")");
+        });
+
+        let resultMsg = "Match Winners:\n" + winnerDisplay.join("\n");
+        db.ref("results/" + key).set(resultMsg);
+        db.ref("matches/" + key).remove();
+        
+        alert("Success! ₹" + prize + " added to winners. Match moved to Results.");
+    });
+ }
+
+ 
+
+
+ function sendIssue(issueType){
+    let user = localStorage.getItem("loggedUser") || "Unknown User";
+    let message = `⚠️ HELP NEEDED\n\nIssue: ${issueType}\nUser: ${user}`;
+    
+    // Background e message jabe
+    sendToTelegramAdmin(message);
+    
+    alert("Your issue has been reported successfully. Admin will check it soon.");
+ }
+ 
+ function renderAdminWithdrawals() {
+    db.ref("withdraw_requests").on("value", snap => {
+        let html = ""; let hasReq = false;
+        snap.forEach(child => {
+            let r = child.val();
+            if(r.status === "Pending") {
+                hasReq = true;
+                html += `<div class="card" style="margin-bottom:12px; border-left:3px solid #ffcc00;">
+                    <div style="font-weight:bold; color:#fff; font-size:14px;">User: ${r.user}</div>
+                    <div style="color:#00d4ff; font-weight:bold; margin:5px 0;">Amount: ₹${r.amount}</div>
+                    <div style="color:#aaa; font-size:13px; margin-bottom:10px;">UPI: <span style="color:#fff; user-select:all;">${r.upi}</span></div>
+                    <button onclick="approveWithdraw(${r.id}, '${r.user}')" class="card-btn" style="background:linear-gradient(45deg, #00b09b, #96c93d); padding:8px; margin:0;"><i class="fa-solid fa-check"></i> Mark as Success</button>
+                </div>`;
+            }
+        });
+        document.getElementById("adminWithdrawalSection").innerHTML = html || "<div class='empty'>No pending withdrawal requests.</div>";
+    });
+ }
+
+ function approveWithdraw(reqId, userEmail) {
+    let safeUser = safeKey(userEmail);
+    db.ref("withdraw_requests/" + reqId + "/status").set("Success"); // Request success
+    db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Success"); // History success
+    alert("Withdrawal marked as Success!");
+ }
+
+ function renderAdminDeposits() {
+    db.ref("deposit_requests").on("value", snap => {
+        let html = ""; let hasReq = false;
+        snap.forEach(child => {
+            let r = child.val();
+            if(r.status === "Pending") {
+                hasReq = true;
+                html += `<div class="card" style="margin-bottom:12px; border-left:3px solid #00d4ff;">
+                    <div style="font-weight:bold; color:#fff; font-size:14px;">User: ${r.user}</div>
+                    <div style="color:#00d4ff; font-weight:bold; margin:5px 0;">Amount: ₹${r.amount}</div>
+                    <div style="color:#aaa; font-size:13px; margin-bottom:10px;">UTR: <span style="color:#fff; user-select:all;">${r.utr}</span></div>
+                    <button onclick="approveDeposit(${r.id}, '${r.user}', ${r.amount})" class="card-btn" style="background:linear-gradient(45deg, #00b09b, #96c93d); padding:8px; margin:0;"><i class="fa-solid fa-check"></i> Approve Deposit</button>
+                </div>`;
+            }
+        });
+        document.getElementById("adminDepositSection").innerHTML = html || "<div class='empty'>No pending deposit requests.</div>";
+    });
+ }
+
+ function approveDeposit(reqId, userEmail, amount) {
+    let safeUser = safeKey(userEmail);
+    
+    db.ref("deposit_requests/" + reqId + "/status").set("Success"); // Request success
+    
+    // Asol taka wallet e add kora
+    db.ref("users/" + safeUser + "/wallet").once("value", snap => {
+        let bal = snap.val() || 0;
+        db.ref("users/" + safeUser + "/wallet").set(bal + amount);
+    });
+
+    db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Success"); // History success
+    
+    alert("Deposit Approved! ₹" + amount + " added to " + userEmail);
+ }
+
+
+ 
+ /* =============================================== */
+
+ function timeFromKey(key){ return parseInt(key.split("_").pop()); }
+  /* --- DEPOSIT & WITHDRAW LOGIC --- */
+   /* --- DEPOSIT LOGIC WITH UPI --- */
+ let currentDepositAmount = 0;
+
+ function openDeposit(){ 
+    document.getElementById("depositStep1").style.display="block";
+    document.getElementById("depositStep2").style.display="none";
+    document.getElementById("utrInput").value = "";
+    document.getElementById("depositModal").style.display="flex"; 
+ }
+ 
+ function closeDeposit(){ document.getElementById("depositModal").style.display="none"; }
+ 
+ function payViaUPI(amount){
+    currentDepositAmount = amount;
+    
+    // Tomar ashol UPI ID r App er nam ekhane set kora holo
+    let upiId = "6296111043@axl";
+    let name = "FFTourney";
+    
+    // Eta automatic phone er UPI app open korbe
+    let upiLink = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR`;
+    window.location.href = upiLink;
+    
+    // UPI App open howar sathe sathe UTR dewar box ta samne chole asbe
+    document.getElementById("depositStep1").style.display="none";
+    document.getElementById("payingAmount").innerText = amount;
+    document.getElementById("depositStep2").style.display="block";
+ }
+ 
+ function verifyUTR(){
+    let utr = document.getElementById("utrInput").value;
+    if(utr.length !== 12){ alert("Invalid UTR!"); return; }
+
+    let btn = document.getElementById("verifyBtn");
+    btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Submitting...";
+    btn.disabled = true;
+
+    setTimeout(() => {
+        let user = localStorage.getItem("loggedUser");
+        let safeUser = safeKey(user);
+        let reqId = Date.now(); // Unique ID
+        
+        // Admin er jonno Firebase e deposit request save kora
+        db.ref("deposit_requests/" + reqId).set({
+            id: reqId, user: user, amount: currentDepositAmount, utr: utr, status: "Pending", time: new Date().toLocaleString()
+        });
+
+        // Player er live history-te Pending hisebe dekhano
+        db.ref("users/" + safeUser + "/history/" + reqId).set({
+            amount: currentDepositAmount, type: "Deposit", status: "Pending", time: new Date().toLocaleString(), reqId: reqId
+        });
+        
+        sendToTelegramAdmin(`⏳ NEW DEPOSIT REQUEST\nUser: ${user}\nAmount: ₹${currentDepositAmount}\nUTR No: ${utr}`);
+        alert("Deposit request submitted successfully! Admin will verify shortly.");
+        
+        btn.innerHTML = "<i class='fa-solid fa-check-circle'></i> Verify & Add Money";
+        btn.disabled = false; closeDeposit();
+    }, 1500); 
+ }
+
+ // 👉 EI DUTO UI FUNCTION JEMON CHHILO TEMONI THAKBE 👈
+ function openWithdraw(){ document.getElementById("withdrawModal").style.display="flex"; }
+ function closeWithdraw(){ document.getElementById("withdrawModal").style.display="none"; }
+ // =========================================================
+
+ function confirmWithdraw(amount){
+    let balance = getWallet();
+    if(balance < amount) return alert("Insufficient Balance!");
+    let upi = prompt("Enter your UPI ID :");
+    if(!upi) return;
+    
+    let user = localStorage.getItem("loggedUser");
+    let safeUser = safeKey(user);
+    let reqId = Date.now();
+
+    // Live balance theke taka advance kete neoa
+    db.ref("users/" + safeUser + "/wallet").once("value", snap => {
+        let bal = snap.val() || 0;
+        db.ref("users/" + safeUser + "/wallet").set(bal - amount);
+    });
+
+    // Firebase e withdraw request save kora
+    db.ref("withdraw_requests/" + reqId).set({
+        id: reqId, user: user, amount: amount, upi: upi, status: "Pending", time: new Date().toLocaleString()
+    });
+
+    // History te pending kora
+    db.ref("users/" + safeUser + "/history/" + reqId).set({
+        amount: amount, type: "Withdraw", status: "Pending", time: new Date().toLocaleString(), reqId: reqId
+    });
+
+    sendToTelegramAdmin(`💸 WITHDRAW REQUEST\nUser: ${user}\nAmount: ₹${amount}\nUPI: ${upi}`);
+    alert("Withdrawal request sent! Check Transaction History.");
+    closeWithdraw();
+ }
+
+
+
+ 
+ function openRules(){ document.getElementById("rulesModal").style.display="flex"; }
+ function closeRules(){ document.getElementById("rulesModal").style.display="none"; }
+ function openNotifications(){ document.getElementById("notificationModal").style.display="flex"; }
+ function closeNotifications(){ document.getElementById("notificationModal").style.display="none"; }
+
+ checkLogin(); createAmountTabs(); createModeTabs();
+</script>
+
+</body>
+              </html>
