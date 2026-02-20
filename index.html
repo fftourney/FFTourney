@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -207,14 +207,26 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
           </div>
       </div>
 
-      <div id="depositStep2" style="display:none; margin-top:10px;">
+                <button onclick="verifyUTR()" id="verifyBtn" class="card-btn" style="background:linear-gradient(45deg, #00d4ff, #2e7dff); margin:0 0 10px 0;"><i class="fa-solid fa-check-circle"></i> Verify & Add Money</button>
+                
+            <div id="depositStep2" style="display:none; margin-top:10px;">
           <p style="color:#ffcc00; font-size:14px; font-weight:bold;">Paying ₹<span id="payingAmount">0</span></p>
-          <p style="color:#aaa; font-size:12px; line-height:1.5;"> After payment success, <b> Input 12-digit UTR Number</b> Then verify your utr number.</p>
+          
+          <div style="background:#0f1115; border:1px dashed #2e7dff; padding:12px; margin-bottom:15px; border-radius:8px;">
+              <p style="color:#aaa; font-size:12px; margin:0 0 8px 0;">Send money to this UPI ID:</p>
+              <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+                  <span style="color:#00d4ff; font-weight:bold; font-size:15px; letter-spacing:1px; user-select:all;">6296111043@axl</span>
+                  <button onclick="copyUPI()" style="background:#2e7dff; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold;"><i class="fa-solid fa-copy"></i> Copy</button>
+              </div>
+          </div>
+          
+          <p style="color:#aaa; font-size:12px; line-height:1.5;"> After Payment Success, <b> Submit 12-digit UTR Number</b> And Verify Your UTR Number.</p>
           
           <input type="number" id="utrInput" placeholder="Enter 12-digit UTR No." style="width:100%; padding:12px; border-radius:5px; background:#111; color:#fff; border:1px solid #2e7dff; margin-bottom:15px; box-sizing:border-box; font-size:15px; text-align:center; letter-spacing:2px;">
           
           <button onclick="verifyUTR()" id="verifyBtn" class="card-btn" style="background:linear-gradient(45deg, #00d4ff, #2e7dff); margin:0 0 10px 0;"><i class="fa-solid fa-check-circle"></i> Verify & Add Money</button>
       </div>
+
       
       <button class="card-btn" onclick="closeDeposit()" style="background:#333; margin:0;">Cancel</button>
     </div>
@@ -957,6 +969,15 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  }
  
  function closeDeposit(){ document.getElementById("depositModal").style.display="none"; }
+  function copyUPI() {
+    let upiId = "6296111043@axl";
+    navigator.clipboard.writeText(upiId).then(() => {
+        alert("UPI ID Copied! Pay any UPI or Payment App Like (PhonePe/GPay/Paytm) And submit UTR.");
+    }).catch(err => {
+        alert("Copy failed. Please manually write: " + upiId);
+    });
+ }
+
  
  function payViaUPI(amount){
     currentDepositAmount = amount;
@@ -1054,4 +1075,4 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 </script>
 
 </body>
-</html>
+    </html>
