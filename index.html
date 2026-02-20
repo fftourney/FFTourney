@@ -66,6 +66,15 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 @keyframes slideUp{ from{transform:translateY(50px); opacity:0;} to{transform:translateY(0); opacity:1;} }
 .empty{ text-align:center; padding:40px; color:#666; font-style: italic; }
 .text-gradient { background: linear-gradient(to right, #2e7dff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;}
+
+/* NOTUN UPDATE ER DESIGN */
+.password-container { position: relative; margin-bottom: 15px; }
+.password-container input { margin-bottom: 0 !important; padding-right: 40px !important; }
+.toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; font-size: 16px; }
+.search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2e7dff; background: #0f1115; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
+.search-box:focus { outline: none; box-shadow: 0 0 10px rgba(46, 125, 255, 0.4); }
+
+
 </style>
 </head>
 <body>
@@ -365,15 +374,62 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  }
 
 
-
  function showLogin(){
-    document.getElementById("auth").innerHTML=`<div class="auth-box"><h3 class="text-gradient">Welcome Back</h3><input type="email" id="loginEmail" placeholder="Email Address"><input type="password" id="loginPass" placeholder="Password"><button class="card-btn" onclick="login()">LOGIN</button><div class="switch" style="margin-top:20px; color:#888;">Don't have an account? <span onclick="showSignup()" style="color:#2e7dff; cursor:pointer;">Sign Up</span></div></div>`;
+    document.getElementById("auth").innerHTML=`<div class="auth-box">
+        <h3 class="text-gradient">Welcome Back</h3>
+        <input type="email" id="loginEmail" placeholder="Email Address">
+        <div class="password-container">
+            <input type="password" id="loginPass" placeholder="Password">
+            <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('loginPass', this)"></i>
+        </div>
+        <div style="text-align:right; margin-bottom:15px;">
+            <span onclick="forgotPassword()" style="color:#2e7dff; cursor:pointer; font-size:12px; font-weight:bold;">Forgot Password?</span>
+        </div>
+        <button class="card-btn" onclick="login()">LOGIN</button>
+        <div class="switch" style="margin-top:20px; color:#888; text-align:center; font-size:13px;">Don't have an account? <span onclick="showSignup()" style="color:#2e7dff; cursor:pointer; font-weight:bold;">Sign Up</span></div>
+    </div>`;
     document.getElementById("auth").style.display="block"; document.getElementById("mainApp").style.display="none";
  }
 
  function showSignup(){
-    document.getElementById("auth").innerHTML=`<div class="auth-box"><h3 class="text-gradient">Create Account</h3><input type="email" id="signupEmail" placeholder="Email Address"><input type="password" id="signupPass" placeholder="Password"><button class="card-btn" onclick="signup()">SIGN UP</button><div class="switch" style="margin-top:20px; color:#888;">Already have an account? <span onclick="showLogin()" style="color:#2e7dff; cursor:pointer;">Login</span></div></div>`;
+    document.getElementById("auth").innerHTML=`<div class="auth-box">
+        <h3 class="text-gradient">Create Account</h3>
+        <input type="email" id="signupEmail" placeholder="Email Address">
+        <div class="password-container">
+            <input type="password" id="signupPass" placeholder="Password">
+            <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('signupPass', this)"></i>
+        </div>
+        <button class="card-btn" onclick="signup()">SIGN UP</button>
+        <div class="switch" style="margin-top:20px; color:#888; text-align:center; font-size:13px;">Already have an account? <span onclick="showLogin()" style="color:#2e7dff; cursor:pointer; font-weight:bold;">Login</span></div>
+    </div>`;
  }
+
+ function togglePassword(inputId, icon) {
+    let input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+    }
+ }
+
+ function forgotPassword() {
+    let email = document.getElementById("loginEmail").value;
+    if(!email) return alert("Please enter your email address in the box first to reset your password.");
+    
+    auth.sendPasswordResetEmail(email).then(() => {
+        alert("Password reset link has been sent to your email!");
+    }).catch((error) => {
+        alert(error.message);
+    });
+ }
+
+ 
+
 
  function signup(){
     let email = document.getElementById("signupEmail").value; 
@@ -685,29 +741,56 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     if(tab === 'deposits') renderAdminDeposits();
  }
 
+
+ let allUsersData = []; 
+
  function renderAdminUsers() {
     db.ref("users").on("value", (snap) => {
-        let html = ""; let hasUsers = false;
+        allUsersData = [];
         snap.forEach(childSnap => {
-            hasUsers = true;
-            let safeEmail = childSnap.key; 
-            let actualEmail = safeEmail.replace(/_/g, '.'); 
-            let bal = childSnap.val().wallet || 0;
-
-            html += `<div class="card" style="margin-bottom:10px; padding:12px;">
-                <div style="font-weight:bold; color:#fff;">User: ${actualEmail}</div>
-                <div style="color:#00d4ff; font-weight:bold;">Balance: ₹${bal}</div>
-                <div style="display:flex; gap:8px; margin-top:10px;">
-                    <input type="number" id="amt_${safeEmail}" placeholder="Amount" style="flex:1; padding:8px; border-radius:5px; background:#111; color:#fff; border:1px solid #333;">
-                    <button onclick="adminAddMoney('${actualEmail}')" style="background:#2e7dff; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Add</button>
-                    <button onclick="adminDeductMoney('${actualEmail}')" style="background:#ff0055; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Cut</button>
-                </div>
-            </div>`;
+            allUsersData.push({ safeEmail: childSnap.key, data: childSnap.val() });
         });
-        if(!hasUsers) html = "<div class='empty'>No users found.</div>";
-        document.getElementById("adminUsersSection").innerHTML = html;
+        displayAdminUsers(allUsersData);
     });
  }
+
+ function displayAdminUsers(usersList) {
+    let html = `<input type="text" id="adminUserSearch" class="search-box" placeholder="Search user by email address..." onkeyup="filterUsers()">`;
+    let hasUsers = false;
+    
+    usersList.forEach(u => {
+        hasUsers = true;
+        let actualEmail = u.safeEmail.replace(/_/g, '.'); 
+        let bal = u.data.wallet || 0;
+
+        html += `<div class="card user-card" data-email="${actualEmail}" style="margin-bottom:10px; padding:12px;">
+            <div style="font-weight:bold; color:#fff;">User: ${actualEmail}</div>
+            <div style="color:#00d4ff; font-weight:bold;">Balance: ₹${bal}</div>
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <input type="number" id="amt_${u.safeEmail}" placeholder="Amount" style="flex:1; padding:8px; border-radius:5px; background:#111; color:#fff; border:1px solid #333;">
+                <button onclick="adminAddMoney('${actualEmail}')" style="background:#2e7dff; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Add</button>
+                <button onclick="adminDeductMoney('${actualEmail}')" style="background:#ff0055; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Cut</button>
+            </div>
+            <button onclick="adminSendNotification('${actualEmail}')" style="width:100%; margin-top:10px; background:#1c222b; color:#ffcc00; border:1px solid #ffcc00; border-radius:5px; padding:8px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-bell"></i> Send Notification</button>
+        </div>`;
+    });
+    
+    if(!hasUsers) html += "<div class='empty'>No users found.</div>";
+    document.getElementById("adminUsersSection").innerHTML = html;
+ }
+
+ function filterUsers() {
+    let query = document.getElementById("adminUserSearch").value.toLowerCase();
+    let cards = document.querySelectorAll(".user-card");
+    cards.forEach(card => {
+        let email = card.getAttribute("data-email").toLowerCase();
+        if(email.includes(query)) card.style.display = "block";
+        else card.style.display = "none";
+    });
+ }
+
+
+
 
  function adminAddMoney(email) {
     let safeEmail = safeKey(email);
@@ -917,6 +1000,7 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     alert("Withdrawal marked as Success!");
  }
 
+
  function renderAdminDeposits() {
     db.ref("deposit_requests").on("value", snap => {
         let html = ""; let hasReq = false;
@@ -928,7 +1012,10 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                     <div style="font-weight:bold; color:#fff; font-size:14px;">User: ${r.user}</div>
                     <div style="color:#00d4ff; font-weight:bold; margin:5px 0;">Amount: ₹${r.amount}</div>
                     <div style="color:#aaa; font-size:13px; margin-bottom:10px;">UTR: <span style="color:#fff; user-select:all;">${r.utr}</span></div>
-                    <button onclick="approveDeposit(${r.id}, '${r.user}', ${r.amount})" class="card-btn" style="background:linear-gradient(45deg, #00b09b, #96c93d); padding:8px; margin:0;"><i class="fa-solid fa-check"></i> Approve Deposit</button>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="approveDeposit(${r.id}, '${r.user}', ${r.amount})" class="card-btn" style="flex:1; background:linear-gradient(45deg, #00b09b, #96c93d); padding:8px; margin:0;"><i class="fa-solid fa-check"></i> Approve</button>
+                        <button onclick="declineDeposit(${r.id}, '${r.user}')" class="card-btn" style="flex:1; background:linear-gradient(45deg, #ff0055, #990000); padding:8px; margin:0;"><i class="fa-solid fa-xmark"></i> Decline</button>
+                    </div>
                 </div>`;
             }
         });
@@ -938,45 +1025,83 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
  function approveDeposit(reqId, userEmail, amount) {
     let safeUser = safeKey(userEmail);
+    db.ref("deposit_requests/" + reqId + "/status").set("Success"); 
     
-    db.ref("deposit_requests/" + reqId + "/status").set("Success"); // Request success
-    
-    // Asol taka wallet e add kora
     db.ref("users/" + safeUser + "/wallet").once("value", snap => {
         let bal = snap.val() || 0;
         db.ref("users/" + safeUser + "/wallet").set(bal + amount);
     });
 
-    db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Success"); // History success
+    db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Success"); 
     
+    // Notification to user
+    db.ref("users/" + safeUser + "/notifications").push({
+        message: "Your deposit of ₹" + amount + " was successful.",
+        time: new Date().toLocaleString()
+    });
+
     alert("Deposit Approved! ₹" + amount + " added to " + userEmail);
  }
 
+ function declineDeposit(reqId, userEmail) {
+    if(!confirm("Are you sure you want to decline this invalid payment?")) return;
+    let safeUser = safeKey(userEmail);
+    
+    db.ref("deposit_requests/" + reqId + "/status").set("Declined"); 
+    db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Declined"); 
+    
+    // Notification to user
+    db.ref("users/" + safeUser + "/notifications").push({
+        message: "Your recent deposit request was DECLINED due to invalid UTR.",
+        time: new Date().toLocaleString()
+    });
 
- 
- /* =============================================== */
-
- function timeFromKey(key){ return parseInt(key.split("_").pop()); }
-  /* --- DEPOSIT & WITHDRAW LOGIC --- */
-   /* --- DEPOSIT LOGIC WITH UPI --- */
- let currentDepositAmount = 0;
-
- function openDeposit(){ 
-    document.getElementById("depositStep1").style.display="block";
-    document.getElementById("depositStep2").style.display="none";
-    document.getElementById("utrInput").value = "";
-    document.getElementById("depositModal").style.display="flex"; 
+    alert("Deposit Declined successfully!");
  }
- 
- function closeDeposit(){ document.getElementById("depositModal").style.display="none"; }
-  function copyUPI() {
-    let upiId = "6296111043@axl";
-    navigator.clipboard.writeText(upiId).then(() => {
-        alert("UPI ID Copied! Pay any UPI or Payment App Like (PhonePe/GPay/Paytm) And submit UTR.");
-    }).catch(err => {
-        alert("Copy failed. Please manually write: " + upiId);
+
+ function adminSendNotification(email) {
+    let msg = prompt("Enter notification message for " + email + ":");
+    if(!msg) return;
+    
+    let safeEmail = safeKey(email);
+    db.ref("users/" + safeEmail + "/notifications").push({
+        message: "Admin Message: " + msg,
+        time: new Date().toLocaleString()
+    });
+    alert("Notification sent successfully!");
+ }
+
+ function openNotifications() { 
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let safeUser = safeKey(user);
+    
+    db.ref("users/" + safeUser + "/notifications").once("value", snap => {
+        let html = "";
+        snap.forEach(child => {
+            let notif = child.val();
+            html = `<div style="background:#1b2028; padding:10px; border-radius:8px; margin-bottom:10px; border-left:3px solid #2e7dff;">
+                <div style="font-size:13px; color:#fff;">${notif.message}</div>
+                <div style="font-size:10px; color:#888; margin-top:5px;">${notif.time}</div>
+            </div>` + html; // Reverse order for newest first
+        });
+        
+        let modalContent = document.querySelector("#notificationModal .modal-content");
+        if(html === "") html = "<p style='color:#aaa;'>No new notifications.</p>";
+        
+        modalContent.innerHTML = `
+            <h3 class="text-gradient">Notifications</h3>
+            <div style="max-height:60vh; overflow-y:auto; margin-bottom:15px; text-align:left;">${html}</div>
+            <button class="card-btn" onclick="closeNotifications()">Close</button>
+        `;
+        document.getElementById("notificationModal").style.display="flex"; 
     });
  }
+
+ function closeNotifications(){ document.getElementById("notificationModal").style.display="none"; }
+
+
+
 
  
  function payViaUPI(amount){
@@ -1027,6 +1152,31 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     }, 1500); 
  }
 
+ // 👉 Deposit Box Open & Close Korar Notun Code 👈
+ let currentDepositAmount = 0;
+
+ function openDeposit() { 
+    document.getElementById("depositModal").style.display="flex"; 
+    // Notun bar open korle jate aager page faka hoye jay
+    document.getElementById("depositStep1").style.display="block";
+    document.getElementById("depositStep2").style.display="none";
+    document.getElementById("utrInput").value = "";
+ }
+ 
+ function closeDeposit() { 
+    document.getElementById("depositModal").style.display="none"; 
+ }
+
+ function copyUPI() {
+    let upiId = "6296111043@axl";
+    navigator.clipboard.writeText(upiId).then(() => {
+        alert("UPI ID Copied! You Can Payment any Payment App or UPI app just Like (PhonePe/GPay/Paytm) After payment Success Submit UTR Number.");
+    }).catch(err => {
+        alert("Copy failed. Please manually write: " + upiId);
+    });
+ }
+
+
  // 👉 EI DUTO UI FUNCTION JEMON CHHILO TEMONI THAKBE 👈
  function openWithdraw(){ document.getElementById("withdrawModal").style.display="flex"; }
  function closeWithdraw(){ document.getElementById("withdrawModal").style.display="none"; }
@@ -1068,11 +1218,10 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  
  function openRules(){ document.getElementById("rulesModal").style.display="flex"; }
  function closeRules(){ document.getElementById("rulesModal").style.display="none"; }
- function openNotifications(){ document.getElementById("notificationModal").style.display="flex"; }
- function closeNotifications(){ document.getElementById("notificationModal").style.display="none"; }
-
+ 
+ 
  checkLogin(); createAmountTabs(); createModeTabs();
 </script>
 
 </body>
-    </html>
+ </html>
