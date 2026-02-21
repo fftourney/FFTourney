@@ -93,6 +93,14 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                 <button class="rules-btn" onclick="openRules()">Rules</button>
             </div>
         </header>
+
+        <div style="margin: 15px; padding: 15px; background: linear-gradient(135deg, #0055ff, #00d4ff); border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);">
+            <h3 style="margin: 0 0 8px 0; color: #fff; font-size: 16px;"><i class="fa-brands fa-android"></i> Download Official App</h3>
+            <p style="margin: 0 0 12px 0; color: #e0f7fa; font-size: 12px;">Get the best gaming experience on your phone!</p>
+            <a href="https://drive.google.com/file/d/1YaEK_1_9tuoKRoYjJaqHQZ5BLMpeSRzZ/view?usp=drivesdk" target="_blank" style="text-decoration: none;">
+                <button style="background: #0f1115; color: #00d4ff; border: 1px solid #00d4ff; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px;"><i class="fa-solid fa-download"></i> Download APK Free</button>
+            </a>
+        </div>
         <div class="tabs" id="amountTabs"></div>
         <div class="tabs" id="modeTabs"></div>
         <div id="app" class="container"></div>
@@ -556,7 +564,6 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     });
  }
 
-
  function joinMatch(key, slots) {
     let user = localStorage.getItem("loggedUser");
     if(!user) return alert("Please Login first!");
@@ -578,20 +585,22 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
             let name = prompt("Enter FreeFire Name:");
             if(!name) return;
 
-            // Balance theke taka kata (Ager function tai use hochhe)
+            // Balance theke taka kata
             updateWallet(-activeAmount, "Entry Fee");
 
-            // Firebase e player er details push kora
+            // Firebase e player er details push kora (Bhul-ta ekhane theek kora hoyechhe)
+            let matchTime = parseInt(key.split("_").pop()); 
             db.ref("matches/" + key + "/players").push({
                 name: name,
                 email: user,
-                joinedTime: timeFromKey(key)
+                joinedTime: matchTime
             });
 
             alert("Joined Successfully!");
         });
     });
  }
+
 
  function showPage(pageId, element){
     document.querySelectorAll(".page").forEach(p=>p.style.display="none");
@@ -640,30 +649,53 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     });
  }
 
+
  // Result page er notun function
  function renderResultsPage() {
     db.ref("results").on("value", snap => {
-        let html = ""; let hasResults = false;
+        let resultsArray = [];
         snap.forEach(childSnap => {
-            hasResults = true;
-            let key = childSnap.key;
-            let resultMsg = childSnap.val();
+            resultsArray.push({ key: childSnap.key, data: childSnap.val() });
+        });
+        
+        // Sobtheke notun result upore rakhar jonno sort kora (Timestamp diye)
+        resultsArray.sort((a, b) => {
+            let timeA = a.data.timestamp || 0;
+            let timeB = b.data.timestamp || 0;
+            return timeB - timeA; // Notun ta upore
+        });
+
+        let html = "";
+        resultsArray.forEach(item => {
+            let key = item.key;
+            let data = item.data;
+            
+            // Purono data r notun data eksathe handle kora
+            let resultMsg = typeof data === 'string' ? data : data.message;
+            let dateStr = typeof data === 'string' ? "Recent" : data.date;
+
+            // Key theke ashol Mode r Time ber kora
             let timeParts = key.split("_");
             let time = timeParts[timeParts.length - 1];
-            let mode = timeParts[1].toUpperCase();
+            let modeKey = timeParts[1] + "_" + timeParts[2]; // ex: 1v1_cs ba 2v2_hs
+            let modeObj = modes.find(m => m.key === modeKey);
+            let modeName = modeObj ? modeObj.label : modeKey.toUpperCase();
 
-            html += `<div class="card">
-                <div style="font-weight:bold; color:#ffcc00; margin-bottom:8px;">Match: ${formatTime(parseInt(time))} | ${mode}</div>
+            html += `<div class="card" style="border-left: 3px solid #ffcc00; margin-bottom:15px;">
+                <div style="background:#111; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #333;">
+                    <div style="color:#00d4ff; font-weight:bold; font-size:13px; margin-bottom:5px;"><i class="fa-solid fa-calendar-day"></i> Date: <span style="color:#fff;">${dateStr}</span></div>
+                    <div style="color:#00d4ff; font-weight:bold; font-size:13px; margin-bottom:5px;"><i class="fa-regular fa-clock"></i> Match Time: <span style="color:#fff;">${formatTime(parseInt(time))}</span></div>
+                    <div style="color:#ffcc00; font-weight:bold; font-size:13px;"><i class="fa-solid fa-gamepad"></i> Mode: <span style="color:#fff;">${modeName}</span></div>
+                </div>
                 <pre style="color:#fff; font-family:inherit; margin:0; font-size:13px; white-space: pre-wrap;">${resultMsg}</pre>
             </div>`;
         });
-        if(!hasResults) html = "<div class='empty'>No results declared yet.</div>";
+
+        if(resultsArray.length === 0) html = "<div class='empty'>No results declared yet.</div>";
         let resPage = document.getElementById("resultsPage");
-        // Heading ta jure dilam jate hariye na jay
-        if(resPage) resPage.innerHTML = `<h3 style="text-align:center;" class="text-gradient">Match Results</h3>` + html;
+        if(resPage) resPage.innerHTML = `<h3 style="text-align:center;" class="text-gradient"><i class="fa-solid fa-trophy"></i> Match Results</h3>` + html;
     });
  }
-
 
 
 
@@ -913,54 +945,58 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         });
 
         let resultMsg = "Match Winners:\n" + winnerDisplay.join("\n");
-        db.ref("results/" + key).set(resultMsg);
-        db.ref("matches/" + key).remove();
         
+        // Ekhane Date r Timestamp add kora hoyechhe
+        db.ref("results/" + key).set({
+            message: resultMsg,
+            date: new Date().toLocaleDateString('en-IN'),
+            timestamp: Date.now()
+        });
+        
+        db.ref("matches/" + key).remove();
         alert("Success! ₹" + prize + " added to winners. Match moved to Results.");
     });
  }
 
   function adminCancelMatch(key) {
-    // Prothome Admin ke ekbar warning dewa
     if(!confirm("Are you sure you want to CANCEL this match? Entry fee will be automatically refunded to all players.")) return;
 
     db.ref("matches/" + key).once("value", snap => {
         let matchData = snap.val();
         
-        // Jodi kono player join na kore thake, tokhon shudhu delete
         if(!matchData || !matchData.players) {
             db.ref("matches/" + key).remove();
             return alert("Match canceled. No players were joined.");
         }
 
         let players = Object.values(matchData.players);
-        let entryFee = parseInt(key.split("_")[0]); // Match er key thekei entry fee ber kore nilam
+        let entryFee = parseInt(key.split("_")[0]); 
 
-        // Ekta ekta kore shob player-ke taka ferot dewa
         players.forEach(p => {
             let safeEmail = safeKey(p.email);
             let userRef = db.ref("users/" + safeEmail);
             
-            // Wallet-e taka add
             userRef.child("wallet").once("value", wSnap => {
                 let bal = wSnap.val() || 0;
                 userRef.child("wallet").set(bal + entryFee); 
             });
 
-            // History te Refund lekha
             let historyRef = userRef.child("history").push();
             historyRef.set({ amount: entryFee, type: "Match Canceled (Refund)", status: "Success", time: new Date().toLocaleString() });
         });
 
-        // Result page-eo jate shobai dekhte pay match cancel hoyechhe
-        db.ref("results/" + key).set("⚠️ This match was CANCELED by the Admin. \nEntry fees (₹" + entryFee + ") have been successfully refunded to all joined players.");
+        // Ekhane Date r Timestamp add kora hoyechhe
+        db.ref("results/" + key).set({
+            message: "⚠️ This match was CANCELED by the Admin. \nEntry fees (₹" + entryFee + ") have been successfully refunded to all joined players.",
+            date: new Date().toLocaleDateString('en-IN'),
+            timestamp: Date.now()
+        });
         
-        // Sesh-e match ta database theke delete kora
         db.ref("matches/" + key).remove();
-        
         alert("Match Canceled Successfully! ₹" + entryFee + " refunded to " + players.length + " players.");
     });
  }
+
 
 
 
