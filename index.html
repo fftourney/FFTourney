@@ -115,6 +115,20 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <h3 style="text-align:center;" class="text-gradient">Match Results</h3>
         <div class="empty">No results declared yet.</div>
     </div>
+    
+    
+    <div id="leaderboardPage" class="page" style="display:none; padding:15px;">
+        <h3 style="text-align:center;" class="text-gradient"><i class="fa-solid fa-ranking-star"></i> Top Earners</h3>
+        
+        <div class="tabs" style="margin-bottom:15px; border-radius:8px;">
+            <div class="tab active" id="lbDaily" onclick="loadLeaderboard('daily')">Today</div>
+            <div class="tab" id="lbWeekly" onclick="loadLeaderboard('weekly')">This Week</div>
+            <div class="tab" id="lbMonthly" onclick="loadLeaderboard('monthly')">This Month</div>
+        </div>
+
+        <div id="leaderboardList"></div>
+    </div>
+
 
     <div id="accountPage" class="page" style="display:none; padding:15px;">
         <h3 style="text-align:center;" class="text-gradient">My Profile</h3>
@@ -177,13 +191,17 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <button class="card-btn" onclick="showPage('accountPage', document.querySelectorAll('.nav-item')[3])" style="margin-top:20px; background:#333;"><i class="fa-solid fa-arrow-left"></i> Back to Account</button>
     </div>
     
+    
 
 <div class="bottom-nav">
   <div class="nav-item active" onclick="showPage('homePage', this)"><i class="fa-solid fa-house"></i>Home</div>
   <div class="nav-item" onclick="showPage('joiningPage', this)"><i class="fa-solid fa-gamepad"></i>My Match</div>
   <div class="nav-item" onclick="showPage('resultsPage', this)"><i class="fa-solid fa-trophy"></i>Result</div>
+  <div class="nav-item" onclick="showPage('leaderboardPage', this)"><i class="fa-solid fa-ranking-star"></i>Top</div>
   <div class="nav-item" onclick="showPage('accountPage', this)"><i class="fa-solid fa-user"></i>Account</div>
 </div>
+
+
 
 <div id="rulesModal" class="modal-overlay">
   <div class="modal-content">
@@ -485,11 +503,21 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         renderUserHistory();
         
         // ADMIN CHECK (Tomar admin email ekhane set kora achhe)
-        if(user === "admin@gmail.com") {
-            document.getElementById("adminBtn").style.display = "block";
+                // 👉 NEW ADMIN & STAFF CHECK
+        let adminBtn = document.getElementById("adminBtn");
+        if(user === "admin@gmail.com" || user === "match@gmail.com" || user === "pay@gmail.com") {
+            adminBtn.style.display = "block";
+            if(user === "match@gmail.com") {
+                adminBtn.innerHTML = '<i class="fa-solid fa-gamepad"></i> Match Staff Panel';
+            } else if (user === "pay@gmail.com") {
+                adminBtn.innerHTML = '<i class="fa-solid fa-money-bill-transfer"></i> Pay Staff Panel';
+            } else {
+                adminBtn.innerHTML = '<i class="fa-solid fa-crown"></i> Super Admin Panel';
+            }
         } else {
-            document.getElementById("adminBtn").style.display = "none";
+            adminBtn.style.display = "none";
         }
+ 
     }else{ showLogin(); }
  }
 
@@ -613,10 +641,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     if(pageId === "joiningPage") renderJoiningPage();
     if(pageId === "resultsPage") renderResultsPage(); // ETI MISSING CHHILO
     // 👆 👆 👆
-    
+    if(pageId === "leaderboardPage") loadLeaderboard('daily')
     window.scrollTo(0,0);
  }
-
 
 
  function renderJoiningPage(){
@@ -753,10 +780,21 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
  /* ================= ADMIN LOGIC ================= */
  function showAdminPage() {
+    let user = localStorage.getItem("loggedUser");
     document.querySelectorAll(".page").forEach(p=>p.style.display="none");
     document.getElementById("adminPage").style.display="block";
-    renderAdminUsers(); renderAdminMatches();
+    
+    // Role onujayi tab dekhabe ba lokabe
+    document.getElementById("tabUsers").style.display = (user === "admin@gmail.com" || user === "pay@gmail.com") ? "block" : "none";
+    document.getElementById("tabMatches").style.display = (user === "admin@gmail.com" || user === "match@gmail.com") ? "block" : "none";
+    document.getElementById("tabDeposits").style.display = (user === "admin@gmail.com" || user === "pay@gmail.com") ? "block" : "none";
+    document.getElementById("tabWithdrawals").style.display = (user === "admin@gmail.com" || user === "pay@gmail.com") ? "block" : "none";
+
+    // Auto load tab
+    if(user === "match@gmail.com") { switchAdminTab('matches'); renderAdminMatches(); } 
+    else { switchAdminTab('users'); renderAdminUsers(); renderAdminDeposits(); renderAdminWithdrawals(); renderAdminMatches(); }
  }
+
  
  function switchAdminTab(tab) {
     document.getElementById("adminUsersSection").style.display = (tab === 'users') ? "block" : "none";
@@ -936,8 +974,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                 userRef.child("wallet").set(bal + prize); 
             });
 
+            // 👉 ASHOL MAGIC EKHANE ADD HOLO: 'reqId: Date.now()' 
             let historyRef = userRef.child("history").push();
-            historyRef.set({ amount: prize, type: "Match Win 🏆", status: "Success", time: new Date().toLocaleString() });
+            historyRef.set({ amount: prize, type: "Match Win 🏆", status: "Success", time: new Date().toLocaleString(), reqId: Date.now() });
 
             let playerObj = players.find(p => p.email === email);
             let playerName = playerObj ? playerObj.name : email; 
@@ -957,6 +996,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         alert("Success! ₹" + prize + " added to winners. Match moved to Results.");
     });
  }
+
+
+
 
   function adminCancelMatch(key) {
     if(!confirm("Are you sure you want to CANCEL this match? Entry fee will be automatically refunded to all players.")) return;
@@ -1010,6 +1052,7 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     alert("Your issue has been reported successfully. Admin will check it soon.");
  }
  
+
  function renderAdminWithdrawals() {
     db.ref("withdraw_requests").on("value", snap => {
         let html = ""; let hasReq = false;
@@ -1017,11 +1060,21 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
             let r = child.val();
             if(r.status === "Pending") {
                 hasReq = true;
+                
+                // 👉 THE AUTO UPI LINK MAGIC
+                let upiPayLink = `upi://pay?pa=${r.upi}&pn=FFTourney&am=${r.amount}&cu=INR`;
+
                 html += `<div class="card" style="margin-bottom:12px; border-left:3px solid #ffcc00;">
                     <div style="font-weight:bold; color:#fff; font-size:14px;">User: ${r.user}</div>
                     <div style="color:#00d4ff; font-weight:bold; margin:5px 0;">Amount: ₹${r.amount}</div>
                     <div style="color:#aaa; font-size:13px; margin-bottom:10px;">UPI: <span style="color:#fff; user-select:all;">${r.upi}</span></div>
-                    <button onclick="approveWithdraw(${r.id}, '${r.user}')" class="card-btn" style="background:linear-gradient(45deg, #00b09b, #96c93d); padding:8px; margin:0;"><i class="fa-solid fa-check"></i> Mark as Success</button>
+                    
+                    <a href="${upiPayLink}" class="card-btn" style="display:block; text-decoration:none; text-align:center; background:linear-gradient(45deg, #2e7dff, #00d4ff); padding:10px; margin-bottom:10px;"><i class="fa-solid fa-mobile-screen"></i> Pay ₹${r.amount} via UPI App</a>
+                    
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="approveWithdraw(${r.id}, '${r.user}')" class="card-btn" style="flex:1; background:linear-gradient(45deg, #00b09b, #96c93d); padding:8px; margin:0;"><i class="fa-solid fa-check"></i> Success</button>
+                        <button onclick="declineWithdraw(${r.id}, '${r.user}', ${r.amount})" class="card-btn" style="flex:1; background:linear-gradient(45deg, #ff0055, #990000); padding:8px; margin:0;"><i class="fa-solid fa-xmark"></i> Decline</button>
+                    </div>
                 </div>`;
             }
         });
@@ -1029,11 +1082,36 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     });
  }
 
+
+
+
  function approveWithdraw(reqId, userEmail) {
     let safeUser = safeKey(userEmail);
     db.ref("withdraw_requests/" + reqId + "/status").set("Success"); // Request success
     db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Success"); // History success
     alert("Withdrawal marked as Success!");
+ }
+
+ // 👉 NEW DECLINE FUNCTION (Refunds Money)
+ function declineWithdraw(reqId, userEmail, amount) {
+    if(!confirm("Decline korle ei takata player-er wallet e ferot chole jabe. Tumi ki sure?")) return;
+    let safeUser = safeKey(userEmail);
+
+    db.ref("withdraw_requests/" + reqId + "/status").set("Declined");
+    db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Declined");
+
+    // Wallet e taka ferot (Refund)
+    db.ref("users/" + safeUser + "/wallet").once("value", snap => {
+        let bal = snap.val() || 0;
+        db.ref("users/" + safeUser + "/wallet").set(bal + amount);
+    });
+    
+    db.ref("users/" + safeUser + "/notifications").push({
+        message: "Your withdrawal of ₹" + amount + " was DECLINED due to an invalid UPI ID. Money refunded to wallet.",
+        time: new Date().toLocaleString()
+    });
+
+    alert("Withdrawal Declined. ₹" + amount + " refunded to user.");
  }
 
 
@@ -1094,6 +1172,87 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
     alert("Deposit Declined successfully!");
  }
+
+ function loadLeaderboard(timeFilter) {
+    // Tab Button Design Update
+    document.getElementById("lbDaily").classList.toggle("active", timeFilter === 'daily');
+    document.getElementById("lbWeekly").classList.toggle("active", timeFilter === 'weekly');
+    document.getElementById("lbMonthly").classList.toggle("active", timeFilter === 'monthly');
+
+    document.getElementById("leaderboardList").innerHTML = "<div class='empty'><i class='fa-solid fa-spinner fa-spin'></i> Loading Top 20 Players...</div>";
+
+    db.ref("users").once("value", snap => {
+        let leaderboard = [];
+        let now = Date.now();
+
+        snap.forEach(userSnap => {
+            let email = userSnap.key.replace(/_/g, '.');
+            let history = userSnap.child("history").val() || {};
+            let totalWon = 0;
+            let matchesWon = 0;
+
+            Object.values(history).forEach(h => {
+                // Shudhu jara Match jitechhe tader hisab hobe
+                if(h.type === "Match Win 🏆" && h.status === "Success" && h.reqId) {
+                    let diffTime = now - h.reqId; 
+                    let diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+                    let include = false;
+                    if(timeFilter === 'daily' && diffDays <= 1) include = true;
+                    if(timeFilter === 'weekly' && diffDays <= 7) include = true;
+                    if(timeFilter === 'monthly' && diffDays <= 30) include = true;
+
+                    if(include) {
+                        totalWon += parseInt(h.amount);
+                        matchesWon++;
+                    }
+                }
+            });
+
+            if(totalWon > 0) {
+                // Email theke name-ta ektu choto kore nenoa jate privacy thake
+                let shortName = email.split('@')[0].substring(0, 5) + "***";
+                leaderboard.push({name: shortName, won: totalWon, matches: matchesWon});
+            }
+        });
+
+        // Sobtheke beshi taka jeta-ke upore rakha (Sorting)
+        leaderboard.sort((a, b) => b.won - a.won);
+
+        // 👉 ASHOL MAGIC: Shudhu Top 20 jon ke nibe, baki der kete debe!
+        leaderboard = leaderboard.slice(0, 20);
+
+        let html = "";
+        leaderboard.forEach((player, index) => {
+            let rankIcon = `#${index + 1}`;
+            let borderStyle = "border:1px solid #232730; background: linear-gradient(145deg, #161a20, #121418);";
+            let nameColor = "#fff";
+            
+            // Top 3 er jonno VIP Premium Design
+            if(index === 0) { rankIcon = "🥇"; borderStyle = "border:2px solid #FFD700; background: linear-gradient(90deg, #161a20, #332b00);"; nameColor = "#FFD700"; }
+            else if(index === 1) { rankIcon = "🥈"; borderStyle = "border:2px solid #C0C0C0; background: linear-gradient(90deg, #161a20, #222);"; nameColor = "#C0C0C0"; }
+            else if(index === 2) { rankIcon = "🥉"; borderStyle = "border:2px solid #CD7F32; background: linear-gradient(90deg, #161a20, #3a2311);"; nameColor = "#CD7F32"; }
+
+            html += `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; margin-bottom:10px; ${borderStyle} border-radius:12px;">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="font-size:22px; font-weight:900; color:#888; width:35px; text-align:center;">${rankIcon}</div>
+                    <div>
+                        <div style="font-weight:bold; color:${nameColor}; font-size:15px; letter-spacing:0.5px;">${player.name}</div>
+                        <div style="font-size:11px; color:#aaa; margin-top:3px;"><i class="fa-solid fa-gamepad" style="color:#2e7dff;"></i> Won ${player.matches} Matches</div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#00ff00; font-weight:900; font-size:17px;">₹${player.won}</div>
+                </div>
+            </div>`;
+        });
+
+        if(leaderboard.length === 0) html = "<div class='empty'>No winners found yet. Be the first one!</div>";
+        document.getElementById("leaderboardList").innerHTML = html;
+    });
+ }
+
 
  function adminSendNotification(email) {
     let msg = prompt("Enter notification message for " + email + ":");
@@ -1260,4 +1419,4 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 </script>
 
 </body>
-           </html>
+               </html>
