@@ -179,6 +179,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <div class="tabs" style="margin-bottom:15px; border-radius:8px;">
             <div class="tab active" id="tabUsers" onclick="switchAdminTab('users')">Manage Users</div>
             <div class="tab" id="tabMatches" onclick="switchAdminTab('matches')">Manage Matches</div>
+            <div class="tab" id="tabTournaments" onclick="switchAdminTab('tournaments')">Manage Tournaments</div>
+            
+
             <div class="tab" id="tabDeposits" onclick="switchAdminTab('deposits')">Deposit Requests</div>
             <div class="tab" id="tabWithdrawals" onclick="switchAdminTab('withdrawals')">Withdraw Requests</div>
         </div>
@@ -187,6 +190,42 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <div id="adminMatchesSection" style="display:none;"></div>
         <div id="adminDepositSection" style="display:none;"></div>
         <div id="adminWithdrawalSection" style="display:none;"></div>
+                <div id="adminTournamentsSection" style="display:none;">
+            <div class="card" style="border:1px solid #00d4ff; background:#111;">
+                <h4 style="color:#00d4ff; margin-top:0;">⚙️ Time Management</h4>
+                <p style="color:#aaa; font-size:12px;">Change match interval (Current: <span id="dispInterval">15</span> mins)</p>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="adminTimeInput" placeholder="Mins" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                    <button onclick="saveTimeSettings()" class="card-btn" style="margin:0; width:auto;">Save Time</button>
+                </div>
+            </div>
+
+            <div class="card" style="border:1px solid #FFD700; background:#111; margin-top:15px;">
+                <h4 style="color:#FFD700; margin-top:0;">🎮 Modes Control (On/Off)</h4>
+                <p style="color:#aaa; font-size:12px;">Click to Hide/Show specific modes</p>
+                <div id="adminModeToggles" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+            </div>
+                        <div class="card" style="border:1px solid #00ff00; background:#111; margin-top:15px;">
+                <h4 style="color:#00ff00; margin-top:0;">➕ Add New Mode</h4>
+                
+                <input type="text" id="newModeLabel" placeholder="Match Name (Ex: 6v6 TDM)" style="width:100%; padding:10px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <select id="newModeType" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                        <option value="Solo">Solo</option>
+                        <option value="Duo">Duo</option>
+                        <option value="Squad">Squad</option>
+                    </select>
+                    <input type="number" id="newModeSlots" placeholder="Slots (Ex: 12)" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                </div>
+
+                <button onclick="addNewMode()" class="card-btn" style="background:linear-gradient(45deg, #00b09b, #96c93d); color:#fff; margin:0;">Create Mode</button>
+            </div>
+            
+            <button onclick="resetModes()" style="margin-top:10px; background:transparent; border:1px solid red; color:red; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:11px;">⚠️ Reset Default Modes</button>
+
+        </div>
+
         
         <button class="card-btn" onclick="showPage('accountPage', document.querySelectorAll('.nav-item')[3])" style="margin-top:20px; background:#333;"><i class="fa-solid fa-arrow-left"></i> Back to Account</button>
     </div>
@@ -335,14 +374,40 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  // ===================================
 
  const entryAmounts=[10,20,50,100,200,400,500,1000];
- const modes=[
+ 
+ // ====== ⚡ DYNAMIC TOURNAMENT SETTINGS ======
+ let tournamentSettings = {
+    interval: 15,   
+    hiddenModes: {} 
+ };
+ 
+ // DEFAULT MODES (Jodi server faka thake)
+ let modes = [
     {key:"1v1_cs", label:"1v1 CS", slots:2, type:"Solo"},
     {key:"2v2_cs", label:"2v2 CS", slots:4, type:"Duo"},
-    {key:"4v4_cs", label:"4v4 CS", slots:8, type:"Squad"},
-    {key:"1v1_hs", label:"1v1 CS Headshot", slots:2, type:"Solo"},
-    {key:"2v2_hs", label:"2v2 CS Headshot", slots:4, type:"Duo"},
-    {key:"4v4_hs", label:"4v4 CS Headshot", slots:8, type:"Squad"}
+    {key:"4v4_cs", label:"4v4 CS", slots:8, type:"Squad"}
  ];
+
+ // Server theke settings + modes load kora
+ function loadSettings(){
+    db.ref("settings").on("value", snap => {
+        if(snap.val()){
+            let data = snap.val();
+            tournamentSettings.interval = data.interval || 15;
+            tournamentSettings.hiddenModes = data.hiddenModes || {};
+            
+            // Jodi admin notun mode add kore thake
+            if(data.customModes){
+                modes = data.customModes;
+            }
+        }
+        createModeTabs(); 
+        renderApp();      
+    });
+ }
+ loadSettings();
+
+
 
  let activeAmount=10;
  let activeMode="1v1_cs";
@@ -526,25 +591,40 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     document.getElementById("amountTabs").innerHTML=html;
  }
 
+
  function createModeTabs(){
-    let html=""; modes.forEach(m=>{ html+=`<div class="tab ${m.key==activeMode?'active':''}" onclick="selectMode('${m.key}')">${m.label}</div>`; });
+    let html=""; 
+    modes.forEach(m=>{ 
+        // Admin jodi mode OFF kore rakhe, tobe dekhabe na
+        if(!tournamentSettings.hiddenModes[m.key]){
+            html+=`<div class="tab ${m.key==activeMode?'active':''}" onclick="selectMode('${m.key}')">${m.label}</div>`; 
+        }
+    });
     document.getElementById("modeTabs").innerHTML=html;
  }
-
- function selectAmount(a){ activeAmount=a; createAmountTabs(); renderApp(); }
- function selectMode(m){ activeMode=m; createModeTabs(); renderApp(); }
 
  function getUpcomingSlots(){
     let now = new Date();
     let current = now.getHours() * 60 + now.getMinutes(); 
     let start = 9 * 60;  // 9:00 AM
-    let end = 21 * 60;   // 9:00 PM
+    let end = 23 * 59;   // 11:59 PM
+    
+    // Admin-er set kora Time Interval (Default 15 min)
+    let gap = parseInt(tournamentSettings.interval) || 15; 
+    
     let list = [];
-    for(let t = start; t <= end; t += 15){
-        if(t >= current){ list.push(t); } // Time par hole hide hoye jabe
+    for(let t = start; t <= end; t += gap){
+        if(t >= current){ list.push(t); } 
     }
     return list;
  }
+
+
+
+ function selectAmount(a){ activeAmount=a; createAmountTabs(); renderApp(); }
+ function selectMode(m){ activeMode=m; createModeTabs(); renderApp(); }
+
+
 
  function formatTime(min){
     let h=Math.floor(min/60); let m=min%60; let ampm = h >= 12 ? 'PM' : 'AM';
@@ -795,21 +875,32 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     else { switchAdminTab('users'); renderAdminUsers(); renderAdminDeposits(); renderAdminWithdrawals(); renderAdminMatches(); }
  }
 
- 
- function switchAdminTab(tab) {
-    document.getElementById("adminUsersSection").style.display = (tab === 'users') ? "block" : "none";
-    document.getElementById("adminMatchesSection").style.display = (tab === 'matches') ? "block" : "none";
-    document.getElementById("adminDepositSection").style.display = (tab === 'deposits') ? "block" : "none";
-    document.getElementById("adminWithdrawalSection").style.display = (tab === 'withdrawals') ? "block" : "none";
-    
-    document.getElementById("tabUsers").classList.toggle("active", tab === 'users');
-    document.getElementById("tabMatches").classList.toggle("active", tab === 'matches');
-    document.getElementById("tabDeposits").classList.toggle("active", tab === 'deposits');
-    document.getElementById("tabWithdrawals").classList.toggle("active", tab === 'withdrawals');
 
-    if(tab === 'withdrawals') renderAdminWithdrawals();
-    if(tab === 'deposits') renderAdminDeposits();
+ function switchAdminTab(tab) {
+    // Sob Section Hide Koro
+    document.getElementById("adminUsersSection").style.display = "none";
+    document.getElementById("adminMatchesSection").style.display = "none";
+    document.getElementById("adminDepositSection").style.display = "none";
+    document.getElementById("adminWithdrawalSection").style.display = "none";
+    document.getElementById("adminTournamentsSection").style.display = "none"; // New
+
+    // Sob Tab Inactive Koro
+    document.querySelectorAll("#adminPage .tab").forEach(t => t.classList.remove("active"));
+
+    // Specific Tab Show Koro
+    if(tab === 'users') { document.getElementById("adminUsersSection").style.display = "block"; document.getElementById("tabUsers").classList.add("active"); }
+    if(tab === 'matches') { document.getElementById("adminMatchesSection").style.display = "block"; document.getElementById("tabMatches").classList.add("active"); }
+    if(tab === 'deposits') { document.getElementById("adminDepositSection").style.display = "block"; document.getElementById("tabDeposits").classList.add("active"); }
+    if(tab === 'withdrawals') { document.getElementById("adminWithdrawalSection").style.display = "block"; document.getElementById("tabWithdrawals").classList.add("active"); }
+    
+    // NEW TOURNAMENT LOGIC
+    if(tab === 'tournaments') { 
+        document.getElementById("adminTournamentsSection").style.display = "block"; 
+        document.getElementById("tabTournaments").classList.add("active");
+        renderAdminTournaments(); // Load UI
+    }
  }
+
 
 
  let allUsersData = []; 
@@ -1416,7 +1507,81 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  
  
  checkLogin(); createAmountTabs(); createModeTabs();
+ 
+ // ====== ADMIN TOURNAMENT FUNCTIONS ======
+ function renderAdminTournaments(){
+    // 1. Time Input Set
+    document.getElementById("dispInterval").innerText = tournamentSettings.interval;
+    document.getElementById("adminTimeInput").value = tournamentSettings.interval;
+
+    // 2. Mode Toggles Render
+    let html = "";
+    modes.forEach(m => {
+        let isHidden = tournamentSettings.hiddenModes[m.key];
+        let color = isHidden ? '#ff4444' : '#00ff00'; // Red if OFF, Green if ON
+        let status = isHidden ? 'OFF ❌' : 'ON ✅';
+        
+        html += `<div onclick="toggleMode('${m.key}')" style="border:1px solid ${color}; padding:10px; border-radius:8px; cursor:pointer; width:45%; text-align:center;">
+            <div style="font-weight:bold; color:#fff;">${m.label}</div>
+            <div style="color:${color}; font-size:12px; font-weight:bold; margin-top:5px;">${status}</div>
+        </div>`;
+    });
+    document.getElementById("adminModeToggles").innerHTML = html;
+ }
+
+ function saveTimeSettings(){
+    let time = parseInt(document.getElementById("adminTimeInput").value);
+    if(time < 5) return alert("Minimum 5 minutes gap required!");
+    db.ref("settings/interval").set(time);
+    alert("Time Interval Updated to " + time + " mins!");
+ }
+
+ function toggleMode(modeKey){
+    let currentStatus = tournamentSettings.hiddenModes[modeKey];
+    // Toggle (True thakle False, False thakle True)
+    db.ref("settings/hiddenModes/" + modeKey).set(!currentStatus);
+    // UI Auto update hoye jabe karon 'loadSettings' function on ache
+ }
+
+ function addNewMode(){
+    let label = document.getElementById("newModeLabel").value;
+    let type = document.getElementById("newModeType").value;
+    let slots = parseInt(document.getElementById("newModeSlots").value);
+
+    if(!label || !slots) return alert("Please fill all fields!");
+
+    // Unique Key banano (Ex: "6v6_tdm")
+    let key = label.toLowerCase().replace(/\s+/g, '_') + "_" + Math.floor(Math.random()*100);
+
+    let newModeObj = {
+        key: key,
+        label: label,
+        slots: slots,
+        type: type
+    };
+
+    // Current modes er sathe notun ta jog kora
+    let updatedModes = [...modes, newModeObj];
+    
+    // Server-e save kora
+    db.ref("settings/customModes").set(updatedModes);
+    
+    alert("New Mode Added Successfully! ✅");
+    
+    // Input clear kora
+    document.getElementById("newModeLabel").value = "";
+    document.getElementById("newModeSlots").value = "";
+ }
+
+ function resetModes(){
+    if(confirm("Are you sure? All custom modes will be deleted and reset to Default (1v1, 2v2, 4v4)!")){
+        db.ref("settings/customModes").remove();
+        alert("Modes Reset to Default!");
+        location.reload();
+    }
+ }
+
 </script>
 
 </body>
-               </html>
+                     </html>
