@@ -132,7 +132,17 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
     <div id="accountPage" class="page" style="display:none; padding:15px;">
         <h3 style="text-align:center;" class="text-gradient">My Profile</h3>
-        
+                <div class="card" style="background: linear-gradient(145deg, #161a20, #121418); border: 1px solid #FFD700; margin-bottom: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="color:#FFD700; font-weight:bold; font-size:13px;"><i class="fa-solid fa-user-pen"></i> Display Name</span>
+                <span style="color:#aaa; font-size:10px;">(Shown on Leaderboard)</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="playerNameInput" placeholder="Enter Name (Ex: Dark_Soul)" maxlength="12" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px; font-weight:bold;">
+                <button onclick="savePlayerName()" class="card-btn" style="width:auto; margin:0; padding:8px 15px; background:linear-gradient(45deg, #FFD700, #FFA500); color:#000; font-weight:bold;">Save</button>
+            </div>
+        </div>
+
         <div class="card" style="text-align:center; background: linear-gradient(145deg, #2e7dff22, #161a20);">
             <p style="color:#aaa; margin-bottom: 5px;"><i class="fa-solid fa-wallet"></i> Wallet Balance</p>
             <h1 id="walletAmount" style="margin:0; font-size: 36px;">₹0</h1>
@@ -149,28 +159,27 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     <div id="userHistoryList"></div>
 </div>
 
-                <div class="card" style="margin-top: 20px;">
+    <div class="card" style="margin-top: 20px; border: 1px solid #0088cc;">
             <h3 style="margin-top:0; color:#00d4ff;"><i class="fa-solid fa-headset"></i> Customer Support</h3>
             
             <a href="https://t.me/FFTournaments13" target="_blank" style="text-decoration:none;">
-                <button class="card-btn" style="margin-top:10px; background:linear-gradient(45deg, #0088cc, #00aaff); text-transform:none;"><i class="fa-brands fa-telegram" style="font-size:18px; margin-right:5px;"></i> Message on Telegram</button>
+                <button class="card-btn" style="margin-top:10px; background:linear-gradient(45deg, #0088cc, #00aaff); text-transform:none;"><i class="fa-brands fa-telegram" style="font-size:18px; margin-right:5px;"></i> Chat on Telegram</button>
             </a>
 
             <h4 style="margin:20px 0 10px 0; font-size:14px; color:#aaa;">Report an Issue:</h4>
+            
+            <textarea id="supportMsgBox" placeholder="Please describe your problem here first... (Example: My UTR is 123456789012 but money not added)" style="width:100%; height:80px; background:#0f1115; color:#fff; border:1px solid #333; border-radius:8px; padding:10px; font-family:inherit; box-sizing:border-box; margin-bottom:10px; font-size:13px;"></textarea>
 
-            <button class="card-btn" onclick="sendIssue('Deposit not received')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Deposit not received</button>
+            <button class="card-btn" onclick="sendIssue('Deposit Issue')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Deposit Not Received</button>
 
-            <button class="card-btn" onclick="sendIssue('Withdrawal not success')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Withdrawal not success</button>
+            <button class="card-btn" onclick="sendIssue('Withdrawal Issue')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Withdrawal Not Success</button>
 
-            <button class="card-btn" onclick="sendIssue('Match joining problem')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Match joining problem</button>
+            <button class="card-btn" onclick="sendIssue('Match Issue')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Match Joining Problem</button>
 
-            <button class="card-btn" onclick="sendIssue('Killed by hacker')" style="margin-top:8px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Killed by hacker</button>
+            <button class="card-btn" onclick="sendIssue('Hacker Report')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Killed by Hacker</button>
 
             <button class="card-btn" onclick="logout()" style="background:#4a0000; border:1px solid #ff0000; margin-top:25px;"><i class="fa-solid fa-right-from-bracket" style="margin-right:5px;"></i> Logout</button>
         </div>
-
-        
-        
     </div>
     
     <div id="adminPage" class="page" style="display:none; padding:15px;">
@@ -193,12 +202,27 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                 <div id="adminTournamentsSection" style="display:none;">
             <div class="card" style="border:1px solid #00d4ff; background:#111;">
                 <h4 style="color:#00d4ff; margin-top:0;">⚙️ Time Management</h4>
-                <p style="color:#aaa; font-size:12px;">Change match interval (Current: <span id="dispInterval">15</span> mins)</p>
-                <div style="display:flex; gap:10px;">
-                    <input type="number" id="adminTimeInput" placeholder="Mins" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
-                    <button onclick="saveTimeSettings()" class="card-btn" style="margin:0; width:auto;">Save Time</button>
+                
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <div style="flex:1;">
+                        <p style="color:#aaa; font-size:11px; margin:0;">Start Hour (24h)</p>
+                        <input type="number" id="adminStartInput" placeholder="9" style="width:100%; padding:8px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                    </div>
+                    <div style="flex:1;">
+                        <p style="color:#aaa; font-size:11px; margin:0;">End Hour (24h)</p>
+                        <input type="number" id="adminEndInput" placeholder="22" style="width:100%; padding:8px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                    </div>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <p style="color:#aaa; font-size:11px; margin:0;">Gap (Mins)</p>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="adminTimeInput" placeholder="15" style="flex:1; padding:8px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                        <button onclick="saveTimeSettings()" class="card-btn" style="margin:0; width:auto; background:#2e7dff;">Save All</button>
+                    </div>
                 </div>
             </div>
+
 
             <div class="card" style="border:1px solid #FFD700; background:#111; margin-top:15px;">
                 <h4 style="color:#FFD700; margin-top:0;">🎮 Modes Control (On/Off)</h4>
@@ -221,7 +245,20 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
                 <button onclick="addNewMode()" class="card-btn" style="background:linear-gradient(45deg, #00b09b, #96c93d); color:#fff; margin:0;">Create Mode</button>
             </div>
-            
+            <div class="card" style="border:1px solid #ff0055; background:#111; margin-top:15px;">
+                <h4 style="color:#ff0055; margin-top:0;">💰 Entry Fee Control</h4>
+                
+                <p style="color:#aaa; font-size:12px;">Click to ON/OFF specific amounts</p>
+                <div id="adminAmountToggles" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px;"></div>
+
+                <hr style="border-color:#333;">
+
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <input type="number" id="newAmountInput" placeholder="New ₹ (Ex: 30)" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                    <button onclick="addNewAmount()" class="card-btn" style="width:auto; margin:0; background:linear-gradient(45deg, #ff0055, #990000);">Add</button>
+                </div>
+            </div>
+
             <button onclick="resetModes()" style="margin-top:10px; background:transparent; border:1px solid red; color:red; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:11px;">⚠️ Reset Default Modes</button>
 
         </div>
@@ -373,39 +410,66 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
  // ===================================
 
- const entryAmounts=[10,20,50,100,200,400,500,1000];
- 
- // ====== ⚡ DYNAMIC TOURNAMENT SETTINGS ======
+  // ====== ⚡ DYNAMIC SETTINGS & DATA ======
+ // Default Amounts (Jodi server faka thake)
+ let entryAmounts = [10, 20, 50, 100, 200, 400, 500, 1000];
+
  let tournamentSettings = {
     interval: 15,   
-    hiddenModes: {} 
+    hiddenModes: {},
+    hiddenAmounts: {}, // Kon amount off achhe
+    startTime: 9, 
+    endTime: 22
  };
- 
- // DEFAULT MODES (Jodi server faka thake)
+
+ // ====== 🔥 MISSING MODES CODE (ETA BOSAO) 🔥 ======
  let modes = [
     {key:"1v1_cs", label:"1v1 CS", slots:2, type:"Solo"},
     {key:"2v2_cs", label:"2v2 CS", slots:4, type:"Duo"},
-    {key:"4v4_cs", label:"4v4 CS", slots:8, type:"Squad"}
+    {key:"4v4_cs", label:"4v4 CS", slots:8, type:"Squad"},
+    {key:"1v1_hs", label:"1v1 CS Headshot", slots:2, type:"Solo"},
+    {key:"2v2_hs", label:"2v2 CS Headshot", slots:4, type:"Duo"},
+    {key:"4v4_hs", label:"4v4 CS Headshot", slots:8, type:"Squad"}
  ];
+ 
+ 
+ // =================================================
 
- // Server theke settings + modes load kora
+
+ // Server theke settings load kora
+ // Server theke settings load kora
  function loadSettings(){
     db.ref("settings").on("value", snap => {
         if(snap.val()){
             let data = snap.val();
-            tournamentSettings.interval = data.interval || 15;
-            tournamentSettings.hiddenModes = data.hiddenModes || {};
             
-            // Jodi admin notun mode add kore thake
-            if(data.customModes){
-                modes = data.customModes;
-            }
+            // Time Settings
+            tournamentSettings.interval = data.interval || 15;
+            tournamentSettings.startTime = data.startTime || 9;
+            tournamentSettings.endTime = data.endTime || 22;
+            
+            // Hidden Data (Make sure object exists)
+            tournamentSettings.hiddenModes = data.hiddenModes || {};
+            tournamentSettings.hiddenAmounts = data.hiddenAmounts || {}; 
+            
+            // Custom Arrays
+            if(data.customModes) modes = data.customModes;
+            if(data.customAmounts) entryAmounts = data.customAmounts;
         }
+        
+        // UI Updates
+        createAmountTabs(); 
         createModeTabs(); 
         renderApp();      
+
+        // 👉 ADMIN PANEL AUTO REFRESH (Jodi admin page khola thake)
+        if(document.getElementById("adminPage").style.display === "block"){
+            renderAdminTournaments();
+        }
     });
  }
  loadSettings();
+
 
 
 
@@ -566,7 +630,8 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         document.getElementById("mainApp").style.display="block";
         displayWallet(); renderApp();
         renderUserHistory();
-        
+        loadUserProfile(); // Eta add koro
+
         // ADMIN CHECK (Tomar admin email ekhane set kora achhe)
                 // 👉 NEW ADMIN & STAFF CHECK
         let adminBtn = document.getElementById("adminBtn");
@@ -587,9 +652,16 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  }
 
  function createAmountTabs(){
-    let html=""; entryAmounts.forEach(a=>{ html+=`<div class="tab ${a==activeAmount?'active':''}" onclick="selectAmount(${a})">₹${a}</div>`; });
+    let html=""; 
+    entryAmounts.forEach(a=>{ 
+        // Admin jodi amount OFF kore rakhe, tobe dekhabe na
+        if(!tournamentSettings.hiddenAmounts[a]){
+            html+=`<div class="tab ${a==activeAmount?'active':''}" onclick="selectAmount(${a})">₹${a}</div>`; 
+        }
+    });
     document.getElementById("amountTabs").innerHTML=html;
  }
+
 
 
  function createModeTabs(){
@@ -606,10 +678,14 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  function getUpcomingSlots(){
     let now = new Date();
     let current = now.getHours() * 60 + now.getMinutes(); 
-    let start = 9 * 60;  // 9:00 AM
-    let end = 23 * 59;   // 11:59 PM
     
-    // Admin-er set kora Time Interval (Default 15 min)
+    // Admin-er set kora Start & End Time (Hours to Minutes)
+    let startHour = parseInt(tournamentSettings.startTime) || 9;
+    let endHour = parseInt(tournamentSettings.endTime) || 22;
+
+    let start = startHour * 60;  
+    let end = endHour * 60;   
+    
     let gap = parseInt(tournamentSettings.interval) || 15; 
     
     let list = [];
@@ -618,6 +694,7 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     }
     return list;
  }
+
 
 
 
@@ -1130,19 +1207,27 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     });
  }
 
-
-
-
  function sendIssue(issueType){
     let user = localStorage.getItem("loggedUser") || "Unknown User";
-    let message = `⚠️ HELP NEEDED\n\nIssue: ${issueType}\nUser: ${user}`;
     
-    // Background e message jabe
+    // Message box theke lekha ta nilam
+    let detailMsg = document.getElementById("supportMsgBox").value.trim();
+    
+    // Jodi message faka thake, warning debo
+    if(!detailMsg) {
+        return alert("⚠️ Please describe your problem in the box first, then click the button!");
+    }
+
+    // Telegram Message Format
+    let message = `🚨 SUPPORT REPORT 🚨\n\n👤 User: ${user}\n📌 Topic: ${issueType}\n\n📝 Message:\n${detailMsg}`;
+    
+    // Telegram-e pathano
     sendToTelegramAdmin(message);
     
-    alert("Your issue has been reported successfully. Admin will check it soon.");
+    alert("✅ Report Sent Successfully! Admin will check your issue shortly.");
+    document.getElementById("supportMsgBox").value = ""; // Box clear kore dilam
  }
- 
+
 
  function renderAdminWithdrawals() {
     db.ref("withdraw_requests").on("value", snap => {
@@ -1265,12 +1350,11 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  }
 
  function loadLeaderboard(timeFilter) {
-    // Tab Button Design Update
     document.getElementById("lbDaily").classList.toggle("active", timeFilter === 'daily');
     document.getElementById("lbWeekly").classList.toggle("active", timeFilter === 'weekly');
     document.getElementById("lbMonthly").classList.toggle("active", timeFilter === 'monthly');
 
-    document.getElementById("leaderboardList").innerHTML = "<div class='empty'><i class='fa-solid fa-spinner fa-spin'></i> Loading Top 20 Players...</div>";
+    document.getElementById("leaderboardList").innerHTML = "<div class='empty'><i class='fa-solid fa-spinner fa-spin'></i> Loading Top Players...</div>";
 
     db.ref("users").once("value", snap => {
         let leaderboard = [];
@@ -1278,12 +1362,16 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
         snap.forEach(userSnap => {
             let email = userSnap.key.replace(/_/g, '.');
+            
+            // 🔥 NAME LOGIC: User-er set kora nam nibe, na thakle Email
+            let savedName = userSnap.child("name").val(); 
+            let displayName = savedName ? savedName : email.split('@')[0].substring(0, 8);
+
             let history = userSnap.child("history").val() || {};
             let totalWon = 0;
             let matchesWon = 0;
 
             Object.values(history).forEach(h => {
-                // Shudhu jara Match jitechhe tader hisab hobe
                 if(h.type === "Match Win 🏆" && h.status === "Success" && h.reqId) {
                     let diffTime = now - h.reqId; 
                     let diffDays = diffTime / (1000 * 60 * 60 * 24);
@@ -1301,16 +1389,11 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
             });
 
             if(totalWon > 0) {
-                // Email theke name-ta ektu choto kore nenoa jate privacy thake
-                let shortName = email.split('@')[0].substring(0, 5) + "***";
-                leaderboard.push({name: shortName, won: totalWon, matches: matchesWon});
+                leaderboard.push({name: displayName, won: totalWon, matches: matchesWon});
             }
         });
 
-        // Sobtheke beshi taka jeta-ke upore rakha (Sorting)
         leaderboard.sort((a, b) => b.won - a.won);
-
-        // 👉 ASHOL MAGIC: Shudhu Top 20 jon ke nibe, baki der kete debe!
         leaderboard = leaderboard.slice(0, 20);
 
         let html = "";
@@ -1319,7 +1402,6 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
             let borderStyle = "border:1px solid #232730; background: linear-gradient(145deg, #161a20, #121418);";
             let nameColor = "#fff";
             
-            // Top 3 er jonno VIP Premium Design
             if(index === 0) { rankIcon = "🥇"; borderStyle = "border:2px solid #FFD700; background: linear-gradient(90deg, #161a20, #332b00);"; nameColor = "#FFD700"; }
             else if(index === 1) { rankIcon = "🥈"; borderStyle = "border:2px solid #C0C0C0; background: linear-gradient(90deg, #161a20, #222);"; nameColor = "#C0C0C0"; }
             else if(index === 2) { rankIcon = "🥉"; borderStyle = "border:2px solid #CD7F32; background: linear-gradient(90deg, #161a20, #3a2311);"; nameColor = "#CD7F32"; }
@@ -1343,6 +1425,8 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         document.getElementById("leaderboardList").innerHTML = html;
     });
  }
+
+
 
 
  function adminSendNotification(email) {
@@ -1510,15 +1594,16 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  
  // ====== ADMIN TOURNAMENT FUNCTIONS ======
  function renderAdminTournaments(){
-    // 1. Time Input Set
-    document.getElementById("dispInterval").innerText = tournamentSettings.interval;
+    // 1. Time Input Set (Start, End, Interval)
     document.getElementById("adminTimeInput").value = tournamentSettings.interval;
+    document.getElementById("adminStartInput").value = tournamentSettings.startTime;
+    document.getElementById("adminEndInput").value = tournamentSettings.endTime;
 
     // 2. Mode Toggles Render
     let html = "";
     modes.forEach(m => {
         let isHidden = tournamentSettings.hiddenModes[m.key];
-        let color = isHidden ? '#ff4444' : '#00ff00'; // Red if OFF, Green if ON
+        let color = isHidden ? '#ff4444' : '#00ff00'; 
         let status = isHidden ? 'OFF ❌' : 'ON ✅';
         
         html += `<div onclick="toggleMode('${m.key}')" style="border:1px solid ${color}; padding:10px; border-radius:8px; cursor:pointer; width:45%; text-align:center;">
@@ -1527,14 +1612,29 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         </div>`;
     });
     document.getElementById("adminModeToggles").innerHTML = html;
+    renderAdminAmounts();
  }
 
  function saveTimeSettings(){
-    let time = parseInt(document.getElementById("adminTimeInput").value);
-    if(time < 5) return alert("Minimum 5 minutes gap required!");
-    db.ref("settings/interval").set(time);
-    alert("Time Interval Updated to " + time + " mins!");
+    let interval = parseInt(document.getElementById("adminTimeInput").value);
+    let start = parseInt(document.getElementById("adminStartInput").value);
+    let end = parseInt(document.getElementById("adminEndInput").value);
+
+    if(interval < 5) return alert("Minimum 5 minutes gap required!");
+    if(start >= end) return alert("Start time must be less than End time!");
+
+    // Save sobkichhu eksathe
+    db.ref("settings").update({
+        interval: interval,
+        startTime: start,
+        endTime: end
+    });
+    
+    alert("Time Settings Updated! Matches will run from " + start + ":00 to " + end + ":00");
  }
+
+
+
 
  function toggleMode(modeKey){
     let currentStatus = tournamentSettings.hiddenModes[modeKey];
@@ -1581,7 +1681,74 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     }
  }
 
+ // ====== AMOUNT MANAGEMENT FUNCTIONS ======
+ function renderAdminAmounts(){
+    let html = "";
+    entryAmounts.forEach(amt => {
+        let isHidden = tournamentSettings.hiddenAmounts[amt];
+        let color = isHidden ? '#555' : '#00d4ff'; // Grey if OFF, Blue if ON
+        let style = isHidden ? 'opacity:0.5; border:1px solid red;' : 'border:1px solid #00d4ff;';
+        
+        html += `<div onclick="toggleAmountState(${amt})" style="${style} color:#fff; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">
+            ₹${amt} ${isHidden ? '❌' : '✅'}
+        </div>`;
+    });
+    document.getElementById("adminAmountToggles").innerHTML = html;
+ }
+
+ function toggleAmountState(amt){
+    let currentStatus = tournamentSettings.hiddenAmounts[amt];
+    // Toggle Status
+    db.ref("settings/hiddenAmounts/" + amt).set(!currentStatus);
+ }
+
+ function addNewAmount(){
+    let val = parseInt(document.getElementById("newAmountInput").value);
+    if(!val) return alert("Please enter a valid amount!");
+    
+    if(entryAmounts.includes(val)) return alert("This amount already exists!");
+
+    let updatedAmounts = [...entryAmounts, val];
+    // Sort choto theke boro
+    updatedAmounts.sort((a,b) => a - b);
+
+    db.ref("settings/customAmounts").set(updatedAmounts);
+    alert("New Amount ₹" + val + " Added!");
+    document.getElementById("newAmountInput").value = "";
+ }
+
+ // ====== NAME SAVE FUNCTION ======
+ function savePlayerName(){
+    let newName = document.getElementById("playerNameInput").value.trim();
+    
+    // Check validation (kom pokkhe 3 okkhor hote hobe)
+    if(newName.length < 3) return alert("Name must be at least 3 characters!");
+    if(newName.length > 12) return alert("Name too long! Max 12 characters.");
+
+    let user = localStorage.getItem("loggedUser");
+    let safeUser = safeKey(user);
+    
+    // Firebase-e name save kora
+    db.ref("users/" + safeUser + "/name").set(newName);
+    
+    alert("Name Saved Successfully! ✅\nIt will appear on Leaderboard.");
+ }
+
+ // User login korle tar purono nam box-e dekhano
+ function loadUserProfile(){
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    
+    let safeUser = safeKey(user);
+    db.ref("users/" + safeUser + "/name").once("value", snap => {
+        if(snap.val()){
+            document.getElementById("playerNameInput").value = snap.val();
+        }
+    });
+ }
+
+
 </script>
 
 </body>
-                     </html>
+                 </html>
