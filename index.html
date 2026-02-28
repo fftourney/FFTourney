@@ -1570,12 +1570,30 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         let finalAmount = amount;
         let bonus = 0;
 
-        // 🔥 FIRST DEPOSIT BONUS LOGIC 🔥
-        if(!userData.firstDepositDone && amount >= 100) {
-            bonus = 20; // 20 Taka Bonus
-            finalAmount = amount + bonus;
-            // Mark kore dewa holo jate dwitiyo bar na pay
+        // 🔥 FIRST DEPOSIT LOGIC (Bonus & Referral Trigger) 🔥
+        if(!userData.firstDepositDone) {
+            // Mark kore dewa holo jate dwitiyo bar ei loop e na dhoke
             db.ref("users/" + safeUser + "/firstDepositDone").set(true);
+
+            // 1. Welcome Bonus (Jodi 100 er beshi add kore)
+            if(amount >= 100) {
+                bonus = 20; 
+                finalAmount = amount + bonus;
+            }
+
+            // 2. REFERRAL MONEY ADD (Shudhu 1st Deposit e bondhu taka pabe)
+            if(userData.referredBy) {
+                let referrerKey = userData.referredBy;
+                db.ref("users/" + referrerKey + "/wallet").once("value", refSnap => {
+                    let refBal = refSnap.val() || 0;
+                    db.ref("users/" + referrerKey + "/wallet").set(refBal + 10); // Bondhur 10 taka
+                    db.ref("users/" + referrerKey + "/history").push({
+                        amount: 10, type: "Referral Bonus (Friend Deposited)", status: "Success", time: new Date().toLocaleString(), reqId: Date.now()
+                    });
+                });
+                // Taka dewar por tag delete kore dewa holo
+                db.ref("users/" + safeUser + "/referredBy").remove();
+            }
         }
 
         // Taka add kora (Main amount + Bonus jodi thake)
@@ -2133,6 +2151,8 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  }
 
  // 2. Apply Friend's Referral Code
+
+ // 2. Apply Friend's Referral Code (Updated: No instant money)
  function applyReferral() {
     let code = document.getElementById("friendReferCode").value.trim().toUpperCase();
     if(!code) return alert("Please enter a code!");
@@ -2147,20 +2167,15 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         
         let referrerKey = snap.val(); 
         
+        // Ekhane amra instantly taka dichhi na. Shudhu mark kore rakhchhi je ke refer korechhe.
         db.ref("users/" + safeUser + "/usedReferral").set(true);
+        db.ref("users/" + safeUser + "/referredBy").set(referrerKey); // ID save korlam
+        
         document.getElementById("referralInputSection").style.display = "none";
-        
-        db.ref("users/" + referrerKey + "/wallet").once("value", wSnap => {
-            let bal = wSnap.val() || 0;
-            db.ref("users/" + referrerKey + "/wallet").set(bal + 10);
-            
-            let histRef = db.ref("users/" + referrerKey + "/history").push();
-            histRef.set({ amount: 10, type: "Referral Bonus", status: "Success", time: new Date().toLocaleString(), reqId: Date.now() });
-        });
-        
-        alert("Success! Referral Applied. Your friend got ₹10 in their wallet.");
+        alert("Success! Code applied. Your friend will get ₹10 after you make your FIRST DEPOSIT!");
     });
  }
+
 
  // 3. Admin: Create Gift Code (With Max Users & 24h)
  function adminCreateGift() {
