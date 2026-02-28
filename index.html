@@ -78,6 +78,13 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 </style>
 </head>
 <body>
+<div id="splashScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at center, #161a20, #0a0c10); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; transition: opacity 0.5s ease-out;">
+    <div style="background: rgba(46, 125, 255, 0.1); padding: 20px; border-radius: 50%; border: 2px solid rgba(46, 125, 255, 0.3); margin-bottom: 20px; box-shadow: 0 0 30px rgba(46, 125, 255, 0.5);">
+        <i class="fa-solid fa-gamepad fa-beat" style="font-size:60px; color:#2e7dff;"></i>
+    </div>
+    <h1 class="brand-name" style="font-size:32px; margin:0; letter-spacing: 2px;">FFTourney <span style="color:#FFD700;">PRO</span></h1>
+    <p style="color:#00d4ff; font-size:13px; font-weight:bold; margin-top:15px; letter-spacing: 1px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Data...</p>
+</div>
 
 <div id="auth"></div>
 
@@ -89,7 +96,7 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <header>
             <span class="brand-name">FFTourney Pro</span>
             <div style="display:flex; gap:15px; align-items:center;">
-                <div id="walletBox"><i class="fa-solid fa-wallet" style="margin-right:5px;"></i> <span id="walletValue">₹0</span></div>
+                <div id="walletBox" onclick="openHeaderWallet()" style="cursor:pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'"><i class="fa-solid fa-wallet" style="margin-right:5px;"></i> <span id="walletValue">₹0</span></div>
                 <button class="rules-btn" onclick="openRules()">Rules</button>
             </div>
         </header>
@@ -97,16 +104,51 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <div style="margin: 15px; padding: 15px; background: linear-gradient(135deg, #0055ff, #00d4ff); border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);">
             <h3 style="margin: 0 0 8px 0; color: #fff; font-size: 16px;"><i class="fa-brands fa-android"></i> Download Official App</h3>
             <p style="margin: 0 0 12px 0; color: #e0f7fa; font-size: 12px;">Get the best gaming experience on your phone!</p>
-            <a href="fftourney.apk" download   style="text-decoration: none;">
+            <a href="fftourney.apk" download style="text-decoration: none;">
                 <button style="background: #0f1115; color: #00d4ff; border: 1px solid #00d4ff; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px;"><i class="fa-solid fa-download"></i> Download APK Free</button>
             </a>
         </div>
+
+        <div style="margin: 0 15px 5px 15px; background: #111; border: 1px dashed #333; border-radius: 8px; padding: 8px; display: flex; align-items: center; overflow: hidden;">
+            <div style="background: linear-gradient(45deg, #ff0055, #ffcc00); color: #000; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: 900; white-space: nowrap; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.5);">
+                LIVE PAYOUTS <i class="fa-solid fa-bolt"></i>
+            </div>
+            <marquee id="livePayoutsTicker" behavior="scroll" direction="left" scrollamount="4" style="color: #00ff00; font-size: 13px; font-weight: bold; margin-left: 10px;">
+                Loading live proofs...
+            </marquee>
+        </div>
+
+        <div style="margin: 0 15px 15px 15px; background: linear-gradient(135deg, #1a1c23, #111); border: 1px solid #333; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0 0 5px 0; color: #fff; font-size: 15px;"><i class="fa-solid fa-circle-question" style="color:#00d4ff;"></i> How to Play?</h3>
+                    <p style="margin: 0; color: #aaa; font-size: 11px;">Learn to join & get Room ID!</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="openTutorial()" class="card-btn" style="width: auto; margin: 0; padding: 6px 12px; background: #333; color:#fff; font-size: 11px; border-radius: 6px;"><i class="fa-solid fa-book-open"></i> GUIDE</button>
+                    <a href="https://www.youtube.com/@fftourney.n" target="_blank" style="text-decoration: none;">
+                        <button class="card-btn" style="width: auto; margin: 0; padding: 6px 12px; background: linear-gradient(45deg, #ff0000, #cc0000); font-size: 11px; font-weight: bold; border-radius: 6px;"><i class="fa-brands fa-youtube"></i> WATCH</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <div class="tabs" id="amountTabs"></div>
         <div class="tabs" id="modeTabs"></div>
         <div id="app" class="container"></div>
-    </div>
 
-    <div id="joiningPage" class="page" style="display:none; padding:15px;">
+        <div style="text-align: center; padding: 20px 15px 40px 15px; margin-top: 10px; border-top: 1px dashed #333; opacity: 0.7;">
+            <h2 class="brand-name" style="font-size: 18px; margin: 0 0 5px 0;">FFTourney <span style="color:#FFD700;">PRO</span></h2>
+            <p style="color: #888; font-size: 11px; margin: 0 0 15px 0;">Play with Skill. Win with Pride.</p>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px;">
+                <a href="https://www.youtube.com/@fftourney.n" target="_blank" style="color: #ff0000; font-size: 20px;"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://t.me/FFTournaments13" target="_blank" style="color: #0088cc; font-size: 20px;"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://www.instagram.com/fftourney.in?igsh=aTdxc3FwMXFseDM3" target="_blank" style="color: #E1306C; font-size: 20px;"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+            <p style="color: #555; font-size: 10px; margin: 0;">App Version: 1.0.0 (Build 01)</p>
+            <p style="color: #555; font-size: 10px; margin: 5px 0 0 0;">&copy; 2026 FFTourney Network. All rights reserved.</p>
+        </div>
+    </div> <div id="joiningPage" class="page" style="display:none; padding:15px;">
         <h3 style="text-align:center;" class="text-gradient">My Matches</h3>
         <div id="joiningList"></div>
     </div>
@@ -116,23 +158,34 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <div class="empty">No results declared yet.</div>
     </div>
     
-    
     <div id="leaderboardPage" class="page" style="display:none; padding:15px;">
         <h3 style="text-align:center;" class="text-gradient"><i class="fa-solid fa-ranking-star"></i> Top Earners</h3>
-        
         <div class="tabs" style="margin-bottom:15px; border-radius:8px;">
             <div class="tab active" id="lbDaily" onclick="loadLeaderboard('daily')">Today</div>
             <div class="tab" id="lbWeekly" onclick="loadLeaderboard('weekly')">This Week</div>
             <div class="tab" id="lbMonthly" onclick="loadLeaderboard('monthly')">This Month</div>
         </div>
-
         <div id="leaderboardList"></div>
     </div>
 
-
     <div id="accountPage" class="page" style="display:none; padding:15px;">
         <h3 style="text-align:center;" class="text-gradient">My Profile</h3>
-                <div class="card" style="background: linear-gradient(145deg, #161a20, #121418); border: 1px solid #FFD700; margin-bottom: 15px;">
+        
+        <div class="card" style="background: linear-gradient(135deg, #332b00, #1a1600); border: 2px solid #FFD700; margin-bottom: 15px; text-align: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -10px; right: -10px; background: #FFD700; color: #000; font-size: 10px; font-weight: bold; padding: 15px 20px 5px 15px; transform: rotate(45deg);">PRO</div>
+            <h3 style="margin-top:0; color:#FFD700; font-size: 20px;"><i class="fa-solid fa-crown"></i> VIP Membership</h3>
+            <p style="color:#ddd; font-size:12px; margin-bottom:15px;">Get a Golden Crown 👑 on Leaderboard & <b>10% OFF</b> on all matches!</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;">
+                <div style="text-align: left;">
+                    <span style="color: #aaa; font-size: 11px;">Price:</span><br>
+                    <span style="color: #00ff00; font-size: 18px; font-weight: bold;">₹49 <span style="font-size: 12px; color: #888;">/ Month</span></span>
+                </div>
+                <button id="vipBtn" onclick="buyVIP()" class="card-btn" style="width: auto; margin: 0; padding: 10px 20px; background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; font-weight: 900;">BUY NOW</button>
+            </div>
+            <div id="vipStatus" style="color: #00ff00; font-size: 12px; margin-top: 10px; font-weight: bold; display: none;">✅ You are a VIP Member!</div>
+        </div>
+
+        <div class="card" style="background: linear-gradient(145deg, #161a20, #121418); border: 1px solid #FFD700; margin-bottom: 15px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <span style="color:#FFD700; font-weight:bold; font-size:13px;"><i class="fa-solid fa-user-pen"></i> Display Name</span>
                 <span style="color:#aaa; font-size:10px;">(Shown on Leaderboard)</span>
@@ -143,45 +196,92 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
             </div>
         </div>
 
+        <div class="card" style="background: linear-gradient(145deg, #111, #0a0c10); border: 1px solid #333; margin-bottom: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed #333; padding-bottom: 10px; margin-bottom: 10px;">
+                <span style="color:#fff; font-weight:bold; font-size:15px;"><i class="fa-solid fa-chart-simple" style="color:#00d4ff;"></i> Gamer Profile</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="myRankBadge" style="background: linear-gradient(45deg, #cd7f32, #8a5a22); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 900; box-shadow: 0 0 10px rgba(205, 127, 50, 0.5);">BRONZE 🟤</span>
+                    <i class="fa-solid fa-circle-info" style="color:#888; font-size:16px; cursor:pointer;" onclick="openRankInfo()"></i>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; text-align:center;">
+                <div style="flex:1;">
+                    <div style="color:#aaa; font-size:11px;">Matches</div>
+                    <div id="statPlayed" style="color:#fff; font-size:18px; font-weight:bold;">0</div>
+                </div>
+                <div style="width:1px; background:#333;"></div>
+                <div style="flex:1;">
+                    <div style="color:#aaa; font-size:11px;">Won</div>
+                    <div id="statWon" style="color:#00ff00; font-size:18px; font-weight:bold;">0</div>
+                </div>
+                <div style="width:1px; background:#333;"></div>
+                <div style="flex:1;">
+                    <div style="color:#aaa; font-size:11px;">Win Rate</div>
+                    <div id="statRate" style="color:#00d4ff; font-size:18px; font-weight:bold;">0%</div>
+                </div>
+            </div>
+        </div>
+
         <div class="card" style="text-align:center; background: linear-gradient(145deg, #2e7dff22, #161a20);">
             <p style="color:#aaa; margin-bottom: 5px;"><i class="fa-solid fa-wallet"></i> Wallet Balance</p>
             <h1 id="walletAmount" style="margin:0; font-size: 36px;">₹0</h1>
-                        <div style="display:flex; gap:10px; margin-top:20px; justify-content:center;">
+            <div style="display:flex; gap:10px; margin-top:20px; justify-content:center;">
                 <button class="card-btn" onclick="openDeposit()" style="width:auto; padding:10px 20px; background:linear-gradient(45deg, #00d4ff, #2e7dff); text-transform:none;"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
                 <button class="card-btn" onclick="openWithdraw()" style="width:auto; padding:10px 20px; background:linear-gradient(45deg, #ff0055, #990000); text-transform:none;"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
             </div>
-
-            
             <button id="adminBtn" class="card-btn" onclick="showAdminPage()" style="display:none; background: linear-gradient(135deg, #ff0055, #990000); margin-top:15px;"><i class="fa-solid fa-crown"></i> Admin Panel</button>
         </div>
-        <div class="card" style="margin-top: 20px;">
-    <h3 style="margin-top:0; color:#00d4ff;"><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h3>
-    <div id="userHistoryList"></div>
-</div>
+        
+        <div class="card" style="margin-top: 20px; border: 1px solid #00ff00;">
+            <h3 style="margin-top:0; color:#00ff00;"><i class="fa-solid fa-gift"></i> Daily Gift Code</h3>
+            <p style="color:#aaa; font-size:12px;">Watch our YouTube video daily to get new Gift Codes!</p>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="giftCodeInput" placeholder="Enter Gift Code" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
+                <button onclick="redeemGiftCode()" class="card-btn" style="width:auto; margin:0; padding:8px 15px; background:linear-gradient(45deg, #00b09b, #96c93d);">Claim</button>
+            </div>
+        </div>
 
-    <div class="card" style="margin-top: 20px; border: 1px solid #0088cc;">
+        <div class="card" style="margin-top: 20px; border: 1px solid #FFD700;">
+            <h3 style="margin-top:0; color:#FFD700;"><i class="fa-solid fa-users"></i> Refer & Earn (Get ₹10)</h3>
+            <p style="color:#aaa; font-size:12px;">Share your code! When a friend uses it, you get ₹10 instantly.</p>
+            <div style="background:#111; padding:10px; border-radius:8px; text-align:center; margin-bottom:10px;">
+                <span style="color:#888; font-size:12px;">Your Referral Code:</span><br>
+                <span id="myReferCode" style="color:#fff; font-weight:bold; font-size:18px; letter-spacing:2px;">LOADING...</span>
+            </div>
+            <div id="referralInputSection" style="display:none; gap:10px; margin-top:15px; border-top:1px dashed #333; padding-top:15px;">
+                <input type="text" id="friendReferCode" placeholder="Enter Friend's Code" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
+                <button onclick="shareOnWhatsApp()" class="card-btn" style="background: linear-gradient(45deg, #128C7E, #25D366); color: #fff; width: 100%; margin-top:10px; padding:10px;"><i class="fa-brands fa-whatsapp" style="font-size: 16px; margin-right: 5px;"></i> Share Code on WhatsApp</button>
+                <button onclick="applyReferral()" class="card-btn" style="width:auto; margin:0; padding:8px 15px; background:linear-gradient(45deg, #FFD700, #FFA500); color:#000;">Submit</button>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <h3 style="margin-top:0; color:#00d4ff;"><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h3>
+            <div id="userHistoryList"></div>
+        </div>
+
+        <div class="card" style="margin-top: 20px; border: 1px solid #0088cc;">
             <h3 style="margin-top:0; color:#00d4ff;"><i class="fa-solid fa-headset"></i> Customer Support</h3>
-            
             <a href="https://t.me/FFTournaments13" target="_blank" style="text-decoration:none;">
                 <button class="card-btn" style="margin-top:10px; background:linear-gradient(45deg, #0088cc, #00aaff); text-transform:none;"><i class="fa-brands fa-telegram" style="font-size:18px; margin-right:5px;"></i> Chat on Telegram</button>
             </a>
-
             <h4 style="margin:20px 0 10px 0; font-size:14px; color:#aaa;">Report an Issue:</h4>
-            
             <textarea id="supportMsgBox" placeholder="Please describe your problem here first... (Example: My UTR is 123456789012 but money not added)" style="width:100%; height:80px; background:#0f1115; color:#fff; border:1px solid #333; border-radius:8px; padding:10px; font-family:inherit; box-sizing:border-box; margin-bottom:10px; font-size:13px;"></textarea>
-
             <button class="card-btn" onclick="sendIssue('Deposit Issue')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Deposit Not Received</button>
-
             <button class="card-btn" onclick="sendIssue('Withdrawal Issue')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Withdrawal Not Success</button>
-
             <button class="card-btn" onclick="sendIssue('Match Issue')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Match Joining Problem</button>
-
             <button class="card-btn" onclick="sendIssue('Hacker Report')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; box-shadow:none; text-align:left;"><i class="fa-solid fa-triangle-exclamation" style="color:#ffcc00; margin-right:8px;"></i> Submit: Killed by Hacker</button>
-
             <button class="card-btn" onclick="logout()" style="background:#4a0000; border:1px solid #ff0000; margin-top:25px;"><i class="fa-solid fa-right-from-bracket" style="margin-right:5px;"></i> Logout</button>
         </div>
-    </div>
-    
+
+        <div class="card" style="margin-top: 20px; border: 1px solid #333;">
+            <h3 style="margin-top:0; color:#fff;"><i class="fa-solid fa-scale-balanced"></i> Legal & Policies</h3>
+            <button class="card-btn" onclick="openLegal('terms')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; text-align:left; box-shadow:none;">📜 Terms & Conditions</button>
+            <button class="card-btn" onclick="openLegal('privacy')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; text-align:left; box-shadow:none;">🔒 Privacy Policy</button>
+            <button class="card-btn" onclick="openLegal('refund')" style="margin-top:5px; padding:10px; background:#1c222b; border:1px solid #2a313c; font-size:13px; text-transform:none; text-align:left; box-shadow:none;">💸 Refund Policy</button>
+        </div>
+    </div> 
+
     <div id="adminPage" class="page" style="display:none; padding:15px;">
         <h3 style="text-align:center; margin-bottom:20px;" class="text-gradient"><i class="fa-solid fa-crown"></i> Admin Control</h3>
         
@@ -200,6 +300,26 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <div id="adminDepositSection" style="display:none;"></div>
         <div id="adminWithdrawalSection" style="display:none;"></div>
                 <div id="adminTournamentsSection" style="display:none;">
+            <div class="card" style="border:1px solid #ffcc00; background:#111; margin-bottom:15px;">
+                <h4 style="color:#ffcc00; margin-top:0;">📢 Set App Announcement</h4>
+                <textarea id="adminNoticeInput" placeholder="Write urgent notice here... (Leave empty to remove notice)" style="width:100%; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px; height:60px; margin-bottom:10px; box-sizing:border-box;"></textarea>
+                <button onclick="adminPublishNotice()" class="card-btn" style="background:linear-gradient(45deg, #FFD700, #FFA500); color:#000; margin:0; font-weight:bold;">Publish Notice</button>
+            </div>
+
+            <div class="card" style="border:1px solid #00ff00; background:#111; margin-bottom:15px;">
+                <h4 style="color:#00ff00; margin-top:0;">🎁 Create Daily Gift Code</h4>
+                <input type="text" id="newGiftCode" placeholder="New Code (Ex: YT200K)" style="width:100%; padding:10px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="number" id="newGiftAmount" placeholder="₹ Amount" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                    <input type="number" id="newGiftMax" placeholder="Max Users (Ex: 50)" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                </div>
+
+                <button onclick="adminCreateGift()" class="card-btn" style="background:linear-gradient(45deg, #00b09b, #96c93d); color:#fff; margin:0;">Publish Gift Code</button>
+            </div>
+
+
+            
             <div class="card" style="border:1px solid #00d4ff; background:#111;">
                 <h4 style="color:#00d4ff; margin-top:0;">⚙️ Time Management</h4>
                 
@@ -277,6 +397,84 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
   <div class="nav-item" onclick="showPage('accountPage', this)"><i class="fa-solid fa-user"></i>Account</div>
 </div>
 
+<div id="announcementModal" class="modal-overlay" style="z-index: 3000;">
+  <div class="modal-content" style="text-align:center; border: 2px solid #ffcc00; box-shadow: 0 0 40px rgba(255, 204, 0, 0.4);">
+    <h2 style="color:#ffcc00; margin-top:0; margin-bottom:10px;"><i class="fa-solid fa-bullhorn fa-shake"></i> LATEST UPDATE</h2>
+    <div id="announcementText" style="color:#fff; font-size:15px; line-height:1.6; margin-bottom:20px; background:#111; padding:15px; border-radius:8px; border:1px solid #333; white-space: pre-wrap;">
+        Loading announcement...
+    </div>
+    <button class="card-btn" onclick="closeAnnouncement()" style="background:linear-gradient(45deg, #ff0055, #990000); margin:0;">Don't show again today</button>
+  </div>
+</div>
+<div id="rankModal" class="modal-overlay" style="z-index: 2500;">
+    <div class="modal-content">
+        <h3 class="text-gradient" style="text-align:center; margin-top:0;"><i class="fa-solid fa-trophy"></i> Rank Tiers</h3>
+        <p style="text-align:center; color:#aaa; font-size:12px; margin-bottom:15px;">Win matches & earn money to upgrade your Rank!</p>
+        
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="background:#111; border-left:4px solid #cd7f32; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#cd7f32; font-weight:bold; font-size:14px;">BRONZE 🟤</span>
+                <span style="color:#aaa; font-size:12px;">Default</span>
+            </div>
+            <div style="background:#111; border-left:4px solid #C0C0C0; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#C0C0C0; font-weight:bold; font-size:14px;">SILVER ⚪</span>
+                <span style="color:#aaa; font-size:12px;">Earn ₹50+</span>
+            </div>
+            <div style="background:#111; border-left:4px solid #FFD700; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#FFD700; font-weight:bold; font-size:14px;">GOLD 🟡</span>
+                <span style="color:#aaa; font-size:12px;">Earn ₹200+</span>
+            </div>
+            <div style="background:#111; border-left:4px solid #8a2be2; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#8a2be2; font-weight:bold; font-size:14px;">HEROIC 🟣</span>
+                <span style="color:#aaa; font-size:12px;">Earn ₹500+</span>
+            </div>
+            <div style="background:#111; border-left:4px solid #ff0000; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#ff0000; font-weight:bold; font-size:14px;">GRANDMASTER 🔴</span>
+                <span style="color:#aaa; font-size:12px;">Earn ₹1000+</span>
+            </div>
+        </div>
+        <button class="card-btn" onclick="closeRankInfo()" style="background:#333; margin-top:15px;">Close</button>
+    </div>
+</div>
+
+<div id="tutorialModal" class="modal-overlay" style="z-index: 2500;">
+    <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
+        <h3 class="text-gradient" style="text-align:center; margin-top:0;"><i class="fa-solid fa-book-open"></i> Quick Guide</h3>
+        
+        <div style="margin-top: 15px;">
+            <div style="background:#111; border-left:3px solid #00d4ff; padding:10px; margin-bottom:10px; border-radius:4px;">
+                <h4 style="margin:0 0 5px 0; color:#00d4ff; font-size:14px;">1️⃣ Add Money</h4>
+                <p style="margin:0; font-size:12px; color:#aaa;">Go to <b>Account > Deposit</b>. Send money via UPI and submit the exact 12-digit UTR number.</p>
+            </div>
+
+            <div style="background:#111; border-left:3px solid #ffcc00; padding:10px; margin-bottom:10px; border-radius:4px;">
+                <h4 style="margin:0 0 5px 0; color:#ffcc00; font-size:14px;">2️⃣ Join Match</h4>
+                <p style="margin:0; font-size:12px; color:#aaa;">Go to <b>Home</b>. Select Mode & Entry Fee. Click on <b>JOIN NOW</b> and enter your exact Free Fire Name.</p>
+            </div>
+
+            <div style="background:#111; border-left:3px solid #00ff00; padding:10px; margin-bottom:10px; border-radius:4px;">
+                <h4 style="margin:0 0 5px 0; color:#00ff00; font-size:14px;">3️⃣ Get Room ID & Pass</h4>
+                <p style="margin:0; font-size:12px; color:#aaa;">Go to <b>My Match</b> page. The Room ID & Password will appear there exactly <b>10-15 minutes</b> before the match starts.</p>
+            </div>
+
+            <div style="background:#111; border-left:3px solid #ff0055; padding:10px; margin-bottom:10px; border-radius:4px;">
+                <h4 style="margin:0 0 5px 0; color:#ff0055; font-size:14px;">4️⃣ Win & Withdraw</h4>
+                <p style="margin:0; font-size:12px; color:#aaa;">Play the match in Free Fire. If you win, admin will add prize money to your wallet. Go to <b>Account > Withdraw</b> to get money in your UPI.</p>
+            </div>
+        </div>
+
+        <button class="card-btn" onclick="closeTutorial()" style="background:#333; margin-top:15px;">I Understood</button>
+    </div>
+</div>
+<div id="legalModal" class="modal-overlay" style="z-index: 3000;">
+    <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
+        <h3 id="legalTitle" class="text-gradient" style="text-align:center; margin-top:0;">Policy</h3>
+        <div id="legalContent" style="color:#ddd; font-size:13px; line-height:1.6; padding: 10px; background: #111; border-radius: 8px; border: 1px solid #333;">
+            Loading...
+        </div>
+        <button class="card-btn" onclick="closeLegal()" style="background:#333; margin-top:15px;">Close</button>
+    </div>
+</div>
 
 
 <div id="rulesModal" class="modal-overlay">
@@ -298,12 +496,29 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
       <button class="card-btn" onclick="closeNotifications()">Close</button>
     </div>
 </div>
+<div id="quickWalletModal" class="modal-overlay" style="z-index: 2500;">
+    <div class="modal-content" style="text-align:center; border: 2px solid #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);">
+        <h3 style="color:#00d4ff; margin-top:0;"><i class="fa-solid fa-wallet"></i> Quick Wallet</h3>
+        <p style="color:#aaa; font-size:12px; margin-bottom:5px;">Available Balance</p>
+        <h1 id="quickWalletAmount" style="font-size:36px; margin: 0 0 20px 0; color:#fff;">₹0</h1>
+        
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="card-btn" onclick="closeHeaderWallet(); openDeposit();" style="width:auto; padding:10px 20px; background:linear-gradient(45deg, #00d4ff, #2e7dff); text-transform:none;"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
+            <button class="card-btn" onclick="closeHeaderWallet(); openWithdraw();" style="width:auto; padding:10px 20px; background:linear-gradient(45deg, #ff0055, #990000); text-transform:none;"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+        </div>
+        
+        <button class="card-btn" onclick="closeHeaderWallet()" style="background:#333; margin-top:20px;">Close</button>
+    </div>
+</div>
 
 <div id="depositModal" class="modal-overlay">
     <div class="modal-content" style="text-align:center;">
       <h3 class="text-gradient"><i class="fa-solid fa-arrow-down"></i> Add Money</h3>
       
       <div id="depositStep1">
+          <div style="background: linear-gradient(90deg, #ff0055, #ffcc00); padding: 10px; border-radius: 8px; margin-bottom: 15px; color: #000; font-weight: bold; font-size: 13px; animation: pulse 2s infinite;">
+              🎁 WELCOME OFFER: Add ₹100 or more & Get ₹20 EXTRA BONUS on your 1st Deposit!
+          </div>
           <p style="color:#aaa; font-size:13px;">Select amount to pay via UPI</p>
           <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:20px; margin-top:15px;">
               <button onclick="payViaUPI(10)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹10</button>
@@ -317,26 +532,34 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
               <button onclick="payViaUPI(1000)" style="padding:8px 15px; border-radius:8px; background:#1b2028; color:#fff; border:1px solid #2e7dff; cursor:pointer;">₹1000</button>
           </div>
       </div>
-
-                <button onclick="verifyUTR()" id="verifyBtn" class="card-btn" style="background:linear-gradient(45deg, #00d4ff, #2e7dff); margin:0 0 10px 0;"><i class="fa-solid fa-check-circle"></i> Verify & Add Money</button>
-                
+      
             <div id="depositStep2" style="display:none; margin-top:10px;">
-          <p style="color:#ffcc00; font-size:14px; font-weight:bold;">Paying ₹<span id="payingAmount">0</span></p>
+          <p style="color:#ffcc00; font-size:16px; font-weight:bold;">Pay Exactly: ₹<span id="payingAmount">0</span></p>
           
+          <div style="background:#fff; padding:15px; border-radius:10px; display:inline-block; margin-bottom:10px; border:3px solid #00d4ff;">
+              <img id="dynamicQRCode" src="" alt="QR Code" width="180" height="180" style="display:block;">
+          </div>
+          
+          <p style="color:#00ff00; font-size:12px; font-weight:bold; margin-top:0; margin-bottom:15px;">
+              📸 Take a Screenshot & Scan in PhonePe/Paytm/GPay
+          </p>
+
           <div style="background:#0f1115; border:1px dashed #2e7dff; padding:12px; margin-bottom:15px; border-radius:8px;">
-              <p style="color:#aaa; font-size:12px; margin:0 0 8px 0;">Send money to this UPI ID:</p>
+              <p style="color:#aaa; font-size:12px; margin:0 0 8px 0;">Or copy UPI ID manually:</p>
               <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
                   <span style="color:#00d4ff; font-weight:bold; font-size:15px; letter-spacing:1px; user-select:all;">fftourney@axl</span>
                   <button onclick="copyUPI()" style="background:#2e7dff; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold;"><i class="fa-solid fa-copy"></i> Copy</button>
               </div>
           </div>
           
-          <p style="color:#aaa; font-size:12px; line-height:1.5;"> After Payment Success, <b> Submit 12-digit UTR Number</b> And Verify Your UTR Number.</p>
+          <p style="color:#aaa; font-size:12px; line-height:1.5;">After Payment Success, <b>Submit 12-digit UTR Number</b> to verify.</p>
           
           <input type="number" id="utrInput" placeholder="Enter 12-digit UTR No." style="width:100%; padding:12px; border-radius:5px; background:#111; color:#fff; border:1px solid #2e7dff; margin-bottom:15px; box-sizing:border-box; font-size:15px; text-align:center; letter-spacing:2px;">
           
           <button onclick="verifyUTR()" id="verifyBtn" class="card-btn" style="background:linear-gradient(45deg, #00d4ff, #2e7dff); margin:0 0 10px 0;"><i class="fa-solid fa-check-circle"></i> Verify & Add Money</button>
       </div>
+
+
 
       
       <button class="card-btn" onclick="closeDeposit()" style="background:#333; margin:0;">Cancel</button>
@@ -522,9 +745,11 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         let wallets = JSON.parse(localStorage.getItem("wallets")) || {};
         wallets[user] = balance;
         localStorage.setItem("wallets", JSON.stringify(wallets));
-
         document.getElementById("walletValue").innerText = "₹" + balance;
         document.getElementById("walletAmount").innerText = "₹" + balance;
+        let qw = document.getElementById("quickWalletAmount");
+        if(qw) qw.innerText = "₹" + balance;
+
     });
  }
 
@@ -631,6 +856,15 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         displayWallet(); renderApp();
         renderUserHistory();
         loadUserProfile(); // Eta add koro
+        loadReferralData();
+        loadLivePayouts();
+        loadAnnouncement();
+        checkVIPStatus();
+        loadPlayerStats();
+
+
+
+
 
         // ADMIN CHECK (Tomar admin email ekhane set kora achhe)
                 // 👉 NEW ADMIN & STAFF CHECK
@@ -725,7 +959,7 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     // Ebar Firebase theke Live data ene box gulote bosiye debo
     slots.forEach(time => {
         let key = activeAmount + "_" + activeMode + "_" + time;
-        let prize = Math.floor(activeAmount * 1.8);
+        let prize = Math.floor(activeAmount * 1.7);
 
         db.ref("matches/" + key + "/players").on("value", (snap) => {
             let playersCount = snap.numChildren(); // Kotojon join koreche
@@ -769,22 +1003,34 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
             let name = prompt("Enter FreeFire Name:");
             if(!name) return;
+            // 👑 VIP DISCOUNT LOGIC & SINGLE JOIN FIX
+            db.ref("users/" + safeUser + "/vipExpiry").once("value").then(vSnap => {
+                let expiry = vSnap.val();
+                let actualFee = activeAmount;
+                let isVIP = (expiry && expiry > Date.now());
 
-            // Balance theke taka kata
-            updateWallet(-activeAmount, "Entry Fee");
+                if (isVIP) {
+                    actualFee = Math.floor(activeAmount * 0.9); // 10% OFF
+                }
 
-            // Firebase e player er details push kora (Bhul-ta ekhane theek kora hoyechhe)
-            let matchTime = parseInt(key.split("_").pop()); 
-            db.ref("matches/" + key + "/players").push({
-                name: name,
-                email: user,
-                joinedTime: matchTime
+                // EKBARR-I TAKA KATBE R JOIN KORBE
+                updateWallet(-actualFee, isVIP ? "Entry Fee (VIP 10% OFF)" : "Entry Fee");
+
+                let matchTime = parseInt(key.split("_").pop()); 
+                db.ref("matches/" + key + "/players").push({
+                    name: name,
+                    email: user,
+                    joinedTime: matchTime,
+                    isVIP: isVIP 
+                });
+
+                alert(isVIP ? `Joined Successfully! You paid ₹${actualFee} (VIP Discount applied 👑)` : "Joined Successfully!");
             });
 
-            alert("Joined Successfully!");
         });
     });
  }
+
 
 
  function showPage(pageId, element){
@@ -1317,21 +1563,47 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     let safeUser = safeKey(userEmail);
     db.ref("deposit_requests/" + reqId + "/status").set("Success"); 
     
-    db.ref("users/" + safeUser + "/wallet").once("value", snap => {
-        let bal = snap.val() || 0;
-        db.ref("users/" + safeUser + "/wallet").set(bal + amount);
+    // User er data check kora hocche
+    db.ref("users/" + safeUser).once("value", snap => {
+        let userData = snap.val() || {};
+        let bal = userData.wallet || 0;
+        let finalAmount = amount;
+        let bonus = 0;
+
+        // 🔥 FIRST DEPOSIT BONUS LOGIC 🔥
+        if(!userData.firstDepositDone && amount >= 100) {
+            bonus = 20; // 20 Taka Bonus
+            finalAmount = amount + bonus;
+            // Mark kore dewa holo jate dwitiyo bar na pay
+            db.ref("users/" + safeUser + "/firstDepositDone").set(true);
+        }
+
+        // Taka add kora (Main amount + Bonus jodi thake)
+        db.ref("users/" + safeUser + "/wallet").set(bal + finalAmount);
+        db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Success"); 
+        
+        // Notification pathano
+        if(bonus > 0) {
+            db.ref("users/" + safeUser + "/notifications").push({
+                message: "🎉 Deposit ₹" + amount + " Successful! You got ₹" + bonus + " EXTRA First Deposit Bonus!",
+                time: new Date().toLocaleString()
+            });
+            // Bonus er alada history
+            db.ref("users/" + safeUser + "/history").push({
+                amount: bonus, type: "Welcome Bonus 🎁", status: "Success", time: new Date().toLocaleString(), reqId: Date.now()
+            });
+        } else {
+            db.ref("users/" + safeUser + "/notifications").push({
+                message: "Your deposit of ₹" + amount + " was successful.",
+                time: new Date().toLocaleString()
+            });
+        }
     });
 
-    db.ref("users/" + safeUser + "/history/" + reqId + "/status").set("Success"); 
-    
-    // Notification to user
-    db.ref("users/" + safeUser + "/notifications").push({
-        message: "Your deposit of ₹" + amount + " was successful.",
-        time: new Date().toLocaleString()
-    });
-
-    alert("Deposit Approved! ₹" + amount + " added to " + userEmail);
+    alert("Deposit Approved! Added ₹" + amount + " to " + userEmail);
  }
+
+
 
  function declineDeposit(reqId, userEmail) {
     if(!confirm("Are you sure you want to decline this invalid payment?")) return;
@@ -1364,8 +1636,16 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
             let email = userSnap.key.replace(/_/g, '.');
             
             // 🔥 NAME LOGIC: User-er set kora nam nibe, na thakle Email
+                        // VIP Crown Logic
             let savedName = userSnap.child("name").val(); 
-            let displayName = savedName ? savedName : email.split('@')[0].substring(0, 8);
+            let baseName = savedName ? savedName : email.split('@')[0].substring(0, 8);
+            
+            let vipExpiry = userSnap.child("vipExpiry").val();
+            let isVIP = (vipExpiry && vipExpiry > Date.now());
+            
+            // Jodi VIP hoy tahole namer pashe golden crown add hobe
+            let displayName = isVIP ? `${baseName} <i class="fa-solid fa-crown" style="color:#FFD700; margin-left:5px;" title="VIP Member"></i>` : baseName;
+
 
             let history = userSnap.child("history").val() || {};
             let totalWon = 0;
@@ -1470,26 +1750,27 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
  function closeNotifications(){ document.getElementById("notificationModal").style.display="none"; }
 
-
-
-
- 
  function payViaUPI(amount){
     currentDepositAmount = amount;
     
-    // Tomar ashol UPI ID r App er nam ekhane set kora holo
-    let upiId = "fftourney@axl";
+    let upiId = "fftourney@axl"; 
     let name = "FFTourney";
     
-    // Eta automatic phone er UPI app open korbe
-    let upiLink = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR`;
-    window.location.href = upiLink;
-    
-    // UPI App open howar sathe sathe UTR dewar box ta samne chole asbe
-    document.getElementById("depositStep1").style.display="none";
+    // 1. UPI Link toiri kora (Amount soho)
+    let upiString = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}&cu=INR`;
+
+    // 2. Free API use kore oi link theke QR Code Image banano
+    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+
+    // 3. Image tag-er bhetore QR Code bosiye dewa
+    document.getElementById("dynamicQRCode").src = qrUrl;
+
+    // 4. UI Update (Box change kora)
+    document.getElementById("depositStep1").style.display = "none";
     document.getElementById("payingAmount").innerText = amount;
-    document.getElementById("depositStep2").style.display="block";
+    document.getElementById("depositStep2").style.display = "block";
  }
+
  
  function verifyUTR(){
     let utr = document.getElementById("utrInput").value;
@@ -1588,7 +1869,79 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  
  function openRules(){ document.getElementById("rulesModal").style.display="flex"; }
  function closeRules(){ document.getElementById("rulesModal").style.display="none"; }
+
+ function openTutorial(){ document.getElementById("tutorialModal").style.display="flex"; }
+ function closeTutorial(){ document.getElementById("tutorialModal").style.display="none"; }
+
+ function openRankInfo(){ document.getElementById("rankModal").style.display="flex"; }
+ function closeRankInfo(){ document.getElementById("rankModal").style.display="none"; }
+ function openHeaderWallet(){ document.getElementById("quickWalletModal").style.display="flex"; }
+ function closeHeaderWallet(){ document.getElementById("quickWalletModal").style.display="none"; }
+
+
+ // ==========================================
+ // ⚖️ LEGAL & POLICIES LOGIC
+ // ==========================================
+ function openLegal(type) {
+    let title = "";
+    let content = "";
+    
+    if (type === 'terms') {
+        title = "📜 Terms & Conditions";
+        content = "1. <b>Age Limit:</b> You must be at least 18 years old to add money and play.<br><br>2. <b>Skill Based:</b> This is a 100% skill-based e-sports platform, not a gambling or betting app.<br><br>3. <b>Fair Play:</b> Any use of hacks, mods, scripts, or illegal teaming up will result in an instant permanent ban without any refund.<br><br>4. <b>Decision:</b> Admin decisions regarding match results and disputes are final.";
+    } else if (type === 'privacy') {
+        title = "🔒 Privacy Policy";
+        content = "1. <b>Data Collection:</b> We collect your Email, Game ID, and Payment (UPI) details solely for organizing matches and processing your payouts.<br><br>2. <b>Data Safety:</b> We do not sell your personal data to any third-party companies.<br><br>3. <b>Security:</b> Your passwords and personal details are encrypted and secured by Google Firebase.";
+    } else if (type === 'refund') {
+        title = "💸 Refund & Cancellation";
+        content = "1. <b>Canceled Matches:</b> If a match is canceled by the admin for any reason, the full entry fee will be 100% refunded to your app wallet.<br><br>2. <b>No-Shows:</b> If you join a match but fail to enter the Free Fire custom room on time, the entry fee will NOT be refunded.<br><br>3. <b>Wallet Deposits:</b> Money added to your wallet cannot be directly refunded to your bank. It must be used to play matches. Only match winnings can be withdrawn to your UPI.";
+    }
+    
+    document.getElementById("legalTitle").innerHTML = title;
+    document.getElementById("legalContent").innerHTML = content;
+    document.getElementById("legalModal").style.display = "flex";
+ }
+
+ function closeLegal() {
+    document.getElementById("legalModal").style.display = "none";
+ }
  
+ 
+  // ==========================================
+ // 📢 APP ANNOUNCEMENT LOGIC
+ // ==========================================
+ function loadAnnouncement() {
+    db.ref("settings/announcement").on("value", snap => {
+        let notice = snap.val();
+        // Jodi notice thake r user aajker dine eta age na kete thake
+        if (notice && notice.trim() !== "") {
+            let lastSeen = sessionStorage.getItem("noticeSeen");
+            if (lastSeen !== notice) {
+                document.getElementById("announcementText").innerText = notice;
+                document.getElementById("announcementModal").style.display = "flex";
+            }
+        } else {
+            document.getElementById("announcementModal").style.display = "none";
+        }
+    });
+ }
+
+ function closeAnnouncement() {
+    let currentNotice = document.getElementById("announcementText").innerText;
+    sessionStorage.setItem("noticeSeen", currentNotice); // Jate app e ghurle bar bar na ashe
+    document.getElementById("announcementModal").style.display = "none";
+ }
+
+ function adminPublishNotice() {
+    let notice = document.getElementById("adminNoticeInput").value;
+    db.ref("settings/announcement").set(notice);
+    if(notice.trim() === "") {
+        alert("Notice removed from app!");
+    } else {
+        alert("Announcement Published to all users!");
+    }
+ }
+
  
  checkLogin(); createAmountTabs(); createModeTabs();
  
@@ -1746,6 +2099,333 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         }
     });
  }
+
+  // ==========================================
+ // 🎁 DAILY GIFT CODE & REFERRAL LOGIC 🎁
+ // ==========================================
+
+ // 1. Load User's Referral Data
+ function loadReferralData() {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let safeUser = safeKey(user);
+
+    db.ref("users/" + safeUser).once("value", snap => {
+        let data = snap.val() || {}; // Safety add kora holo
+        
+        // Jodi user-er code na thake, tobe notun banabe
+        if(!data.referCode) {
+            let code = Math.random().toString(36).substring(2, 8).toUpperCase();
+            db.ref("users/" + safeUser + "/referCode").set(code);
+            db.ref("referrals/" + code).set(safeUser); // Code ta database-e rakhlam
+            document.getElementById("myReferCode").innerText = code;
+        } else {
+            document.getElementById("myReferCode").innerText = data.referCode;
+        }
+
+        // Jodi aage theke karor code use na kore thake, tobe box dekhabe
+        if(!data.usedReferral) {
+            document.getElementById("referralInputSection").style.display = "flex";
+        } else {
+            document.getElementById("referralInputSection").style.display = "none";
+        }
+    });
+ }
+
+ // 2. Apply Friend's Referral Code
+ function applyReferral() {
+    let code = document.getElementById("friendReferCode").value.trim().toUpperCase();
+    if(!code) return alert("Please enter a code!");
+    
+    let myCode = document.getElementById("myReferCode").innerText;
+    if(code === myCode) return alert("You can't use your own code!");
+
+    let safeUser = safeKey(localStorage.getItem("loggedUser"));
+    
+    db.ref("referrals/" + code).once("value", snap => {
+        if(!snap.exists()) return alert("Invalid Referral Code!");
+        
+        let referrerKey = snap.val(); 
+        
+        db.ref("users/" + safeUser + "/usedReferral").set(true);
+        document.getElementById("referralInputSection").style.display = "none";
+        
+        db.ref("users/" + referrerKey + "/wallet").once("value", wSnap => {
+            let bal = wSnap.val() || 0;
+            db.ref("users/" + referrerKey + "/wallet").set(bal + 10);
+            
+            let histRef = db.ref("users/" + referrerKey + "/history").push();
+            histRef.set({ amount: 10, type: "Referral Bonus", status: "Success", time: new Date().toLocaleString(), reqId: Date.now() });
+        });
+        
+        alert("Success! Referral Applied. Your friend got ₹10 in their wallet.");
+    });
+ }
+
+ // 3. Admin: Create Gift Code (With Max Users & 24h)
+ function adminCreateGift() {
+    let code = document.getElementById("newGiftCode").value.trim().toUpperCase();
+    let amt = parseInt(document.getElementById("newGiftAmount").value);
+    let maxUsers = parseInt(document.getElementById("newGiftMax").value); 
+    
+    if(!code || !amt || !maxUsers) return alert("Please fill all fields!");
+
+    let now = Date.now();
+
+    db.ref("giftcodes/" + code).set({ 
+        amount: amt, 
+        active: true,
+        createdAt: now,
+        maxClaims: maxUsers,  
+        currentClaims: 0      
+    });
+    
+    alert("Gift Code '" + code + "' Published for " + maxUsers + " Users! ⏳ Valid for 24h.");
+    
+    document.getElementById("newGiftCode").value = "";
+    document.getElementById("newGiftAmount").value = "";
+    document.getElementById("newGiftMax").value = "";
+ }
+
+ // 4. User: Redeem Gift Code (With 30Rs Limit & User Limit)
+ function redeemGiftCode() {
+    let code = document.getElementById("giftCodeInput").value.trim().toUpperCase();
+    if(!code) return alert("Please enter a Gift Code!");
+    
+    let safeUser = safeKey(localStorage.getItem("loggedUser"));
+
+    // 🔴 1st Check: Wallet Balance
+    db.ref("users/" + safeUser + "/wallet").once("value", wSnap => {
+        let currentBal = wSnap.val() || 0;
+        
+        if (currentBal >= 30) {
+            return alert("❌ Limit Reached! You already have ₹" + currentBal + " in your wallet. Gift codes are only for players with low balance to play matches.");
+        }
+
+        // 🔴 2nd Check: Aage niyeche kina
+        db.ref("users/" + safeUser + "/usedGifts/" + code).once("value", usedSnap => {
+            if(usedSnap.exists()) return alert("You have already used this Gift Code!");
+
+            db.ref("giftcodes/" + code).once("value", snap => {
+                if(!snap.exists()) return alert("Invalid Gift Code! Please check spelling.");
+                
+                let giftData = snap.val();
+                
+                // 🔴 3rd Check: 24 Hour Expire
+                let now = Date.now();
+                let hoursPassed = (now - (giftData.createdAt || 0)) / (1000 * 60 * 60); 
+                
+                if(!giftData.active || hoursPassed > 24) {
+                    return alert("⏳ Oops! This Gift Code has Expired.");
+                }
+
+                // 🔴 4th Check: Max Limit Check
+                let claims = giftData.currentClaims || 0;
+                let max = giftData.maxClaims || 99999;
+
+                if (claims >= max) {
+                    return alert("😢 Oh No! Code is fully claimed. Only first " + max + " users got it. Try early next time!");
+                }
+                
+                let amt = giftData.amount;
+                
+                db.ref("users/" + safeUser + "/wallet").set(currentBal + amt);
+                db.ref("users/" + safeUser + "/usedGifts/" + code).set(true);
+                
+                db.ref("giftcodes/" + code + "/currentClaims").set(claims + 1);
+                
+                let histRef = db.ref("users/" + safeUser + "/history").push();
+                histRef.set({ amount: amt, type: "Gift Code 🎁", status: "Success", time: new Date().toLocaleString(), reqId: Date.now() });
+
+                alert("Congratulations! 🎉 You claimed ₹" + amt + " from the Gift Code!");
+                document.getElementById("giftCodeInput").value = "";
+            });
+        });
+    });
+ }
+
+ // ==========================================
+ // 🏆 LIVE PAYOUT TICKER (TRUST BUILDER)
+ // ==========================================
+ function loadLivePayouts() {
+    // Firebase theke last 10 ta withdraw request tene ana
+    db.ref("withdraw_requests").limitToLast(10).on("value", snap => {
+        let payouts = [];
+        
+        snap.forEach(child => {
+            let r = child.val();
+            // Shudhu matro jader taka success hoyechhe tader-tai dekhabo
+            if(r.status === "Success") {
+                // Privacy-r jonno Email er adhekta lukiye dewa (Ex: rahul***@gmail.com)
+                let emailParts = r.user.split("@");
+                let safeName = emailParts[0].substring(0, 4) + "***"; 
+                payouts.push(`✅ ${safeName} successfully withdrew ₹${r.amount}`);
+            }
+        });
+        
+        let ticker = document.getElementById("livePayoutsTicker");
+        
+        if(payouts.length > 0) {
+            ticker.innerText = payouts.reverse().join("   🚀   ");
+        } else {
+            // Jodi ekhono keu withdraw na kore thake, tobe ei by-default lekha ta ghurbe (Jate faka na lage)
+            ticker.innerText = "✅ pro_player*** withdrew ₹50   🚀   ✅ dark_soul*** withdrew ₹100   🚀   Play matches & win real cash instantly!";
+        }
+    });
+ }
+ // ==========================================
+ // 👑 VIP MEMBERSHIP LOGIC
+ // ==========================================
+ function buyVIP() {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return alert("Please login first!");
+    let safeUser = safeKey(user);
+
+    db.ref("users/" + safeUser).once("value", snap => {
+        let userData = snap.val() || {};
+        let bal = userData.wallet || 0;
+        
+        // Jodi already VIP thake
+        let now = Date.now();
+        if (userData.vipExpiry && userData.vipExpiry > now) {
+            return alert("You are already a VIP Member! 👑");
+        }
+
+        // Taka check
+        if (bal < 49) {
+            return alert("❌ Insufficient Balance! Please add at least ₹49 to buy VIP.");
+        }
+
+        if(!confirm("Buy VIP Membership for ₹49? You will get 10% OFF on all match entry fees!")) return;
+
+        // Taka kata r VIP 30 diner jonno set kora
+        let thirtyDays = 30 * 24 * 60 * 60 * 1000; 
+        
+        db.ref("users/" + safeUser + "/wallet").set(bal - 49);
+        db.ref("users/" + safeUser + "/vipExpiry").set(now + thirtyDays);
+        
+        let histRef = db.ref("users/" + safeUser + "/history").push();
+        histRef.set({ amount: 49, type: "VIP Pass 👑", status: "Success", time: new Date().toLocaleString(), reqId: Date.now() });
+
+        alert("🎉 Congratulations! You are now a VIP Member. Enjoy 10% discounts and your Golden Crown!");
+        checkVIPStatus();
+    });
+ }
+
+ // UI Update (Login korle dekhabe se VIP kina)
+ function checkVIPStatus() {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let safeUser = safeKey(user);
+    
+    db.ref("users/" + safeUser + "/vipExpiry").on("value", snap => {
+        let expiry = snap.val();
+        let btn = document.getElementById("vipBtn");
+        let status = document.getElementById("vipStatus");
+        
+        if (btn && status) {
+            if (expiry && expiry > Date.now()) {
+                btn.style.display = "none";
+                status.style.display = "block";
+            } else {
+                btn.style.display = "block";
+                status.style.display = "none";
+            }
+        }
+    });
+ }
+
+ function shareOnWhatsApp() {
+    let myCode = document.getElementById("myReferCode").innerText;
+    if(myCode === "LOADING..." || !myCode) return alert("Please wait, loading your code...");
+    
+    // 💡 Ekhane tumi tomar app er ashol link bosiye nite parbe pore
+    let appLink = "https://fftourney.in"; 
+    let msg = `🔥 Play Free Fire Tournaments & Win Real Cash! 💸\n\nUse my Referral Code: *${myCode}* to get instant rewards!\n\nDownload the App Now: ${appLink}`;
+    
+    let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+    window.open(whatsappUrl, '_blank');
+ }
+ // ==========================================
+ // 📊 PLAYER STATS & RANK LOGIC
+ // ==========================================
+ function loadPlayerStats() {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let safeUser = safeKey(user);
+
+    db.ref("users/" + safeUser + "/history").on("value", snap => {
+        let historyData = snap.val() || {};
+        
+        let matchesPlayed = 0;
+        let matchesWon = 0;
+        let totalEarnings = 0;
+
+        Object.values(historyData).forEach(h => {
+            // Check koto gulo match kheleche (Entry Fee diyeche)
+            if(h.type && h.type.includes("Entry Fee") && h.status === "Success") {
+                matchesPlayed++;
+            }
+            // Check koto gulo match jiteche r koto taka income koreche
+            if(h.type === "Match Win 🏆" && h.status === "Success") {
+                matchesWon++;
+                totalEarnings += parseInt(h.amount);
+            }
+        });
+
+        // Win Rate ber kora
+        let winRate = matchesPlayed > 0 ? Math.round((matchesWon / matchesPlayed) * 100) : 0;
+
+        // UI te Data bosano
+        let elPlayed = document.getElementById("statPlayed");
+        let elWon = document.getElementById("statWon");
+        let elRate = document.getElementById("statRate");
+        
+        if(elPlayed) elPlayed.innerText = matchesPlayed;
+        if(elWon) elWon.innerText = matchesWon;
+        if(elRate) elRate.innerText = winRate + "%";
+
+        // 🔥 RANK & TIER SYSTEM LOGIC 🔥
+        let rankBadge = document.getElementById("myRankBadge");
+        if(rankBadge) {
+            if (totalEarnings >= 1000) {
+                rankBadge.innerText = "GRANDMASTER 🔴";
+                rankBadge.style.background = "linear-gradient(45deg, #ff0000, #880000)";
+                rankBadge.style.boxShadow = "0 0 15px rgba(255, 0, 0, 0.6)";
+            } else if (totalEarnings >= 500) {
+                rankBadge.innerText = "HEROIC 🟣";
+                rankBadge.style.background = "linear-gradient(45deg, #8a2be2, #4b0082)";
+                rankBadge.style.boxShadow = "0 0 15px rgba(138, 43, 226, 0.6)";
+            } else if (totalEarnings >= 200) {
+                rankBadge.innerText = "GOLD 🟡";
+                rankBadge.style.background = "linear-gradient(45deg, #FFD700, #FFA500)";
+                rankBadge.style.boxShadow = "0 0 15px rgba(255, 215, 0, 0.6)";
+            } else if (totalEarnings >= 50) {
+                rankBadge.innerText = "SILVER ⚪";
+                rankBadge.style.background = "linear-gradient(45deg, #C0C0C0, #808080)";
+                rankBadge.style.boxShadow = "0 0 15px rgba(192, 192, 192, 0.6)";
+            } else {
+                rankBadge.innerText = "BRONZE 🟤";
+                rankBadge.style.background = "linear-gradient(45deg, #cd7f32, #8a5a22)";
+                rankBadge.style.boxShadow = "0 0 10px rgba(205, 127, 50, 0.5)";
+            }
+        }
+    });
+ }
+ // ==========================================
+ // 🚀 SPLASH SCREEN REMOVER LOGIC
+ // ==========================================
+ window.onload = function() {
+    setTimeout(() => {
+        let splash = document.getElementById("splashScreen");
+        if(splash) {
+            splash.style.opacity = "0"; // Prothome adrishyo hobe
+            setTimeout(() => {
+                splash.style.display = "none"; // Tarpor puro shore jabe
+            }, 500); // 0.5 second pore
+        }
+    }, 1500); // Dedh second (1.5s) loading dekhabe
+ };
 
 
 </script>
