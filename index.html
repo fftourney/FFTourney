@@ -163,6 +163,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         <div class="tabs" style="margin-bottom:15px; border-radius:8px;">
             <div class="tab active" id="lbDaily" onclick="loadLeaderboard('daily')">Today</div>
             <div class="tab" id="lbWeekly" onclick="loadLeaderboard('weekly')">This Week</div>
+            <div class="tab" id="lbTeams" onclick="loadTeamLeaderboard()" style="border:1px solid #8a2be2; color:#8a2be2;"><i class="fa-solid fa-shield-halved"></i> Squads</div>
+            <div class="tab" id="lbGuilds" onclick="loadGuildLeaderboard()" style="border:1px solid #ff4500; color:#ff4500;"><i class="fa-solid fa-chess-rook"></i> Guilds</div>
+
             <div class="tab" id="lbMonthly" onclick="loadLeaderboard('monthly')">This Month</div>
         </div>
         <div id="leaderboardList"></div>
@@ -170,20 +173,6 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
     <div id="accountPage" class="page" style="display:none; padding:15px;">
         <h3 style="text-align:center;" class="text-gradient">My Profile</h3>
-        
-        <div class="card" style="background: linear-gradient(135deg, #332b00, #1a1600); border: 2px solid #FFD700; margin-bottom: 15px; text-align: center; position: relative; overflow: hidden;">
-            <div style="position: absolute; top: -10px; right: -10px; background: #FFD700; color: #000; font-size: 10px; font-weight: bold; padding: 15px 20px 5px 15px; transform: rotate(45deg);">PRO</div>
-            <h3 style="margin-top:0; color:#FFD700; font-size: 20px;"><i class="fa-solid fa-crown"></i> VIP Membership</h3>
-            <p style="color:#ddd; font-size:12px; margin-bottom:15px;">Get a Golden Crown 👑 on Leaderboard & <b>10% OFF</b> on all matches!</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;">
-                <div style="text-align: left;">
-                    <span style="color: #aaa; font-size: 11px;">Price:</span><br>
-                    <span style="color: #00ff00; font-size: 18px; font-weight: bold;">₹49 <span style="font-size: 12px; color: #888;">/ Month</span></span>
-                </div>
-                <button id="vipBtn" onclick="buyVIP()" class="card-btn" style="width: auto; margin: 0; padding: 10px 20px; background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; font-weight: 900;">BUY NOW</button>
-            </div>
-            <div id="vipStatus" style="color: #00ff00; font-size: 12px; margin-top: 10px; font-weight: bold; display: none;">✅ You are a VIP Member!</div>
-        </div>
 
         <div class="card" style="background: linear-gradient(145deg, #161a20, #121418); border: 1px solid #FFD700; margin-bottom: 15px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -218,6 +207,32 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                 <div style="flex:1;">
                     <div style="color:#aaa; font-size:11px;">Win Rate</div>
                     <div id="statRate" style="color:#00d4ff; font-size:18px; font-weight:bold;">0%</div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="background: linear-gradient(145deg, #161a20, #0a0c10); border: 1px solid #8a2be2; margin-bottom: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed #333; padding-bottom: 10px; margin-bottom: 10px;">
+                <span style="color:#fff; font-weight:bold; font-size:15px;"><i class="fa-solid fa-shield-halved" style="color:#8a2be2;"></i> My E-sports Squad</span>
+                <span id="myTeamScore" style="color:#ffcc00; font-size:12px; font-weight:bold; display:none;"><i class="fa-solid fa-star"></i> Score: 0</span>
+            </div>
+            <div id="myTeamSection">
+                <p style="color:#aaa; font-size:12px; text-align:center;">You are not in any squad.</p>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button onclick="createNewTeam()" class="card-btn" style="background:linear-gradient(45deg, #8a2be2, #4b0082); margin:0; padding:8px;"><i class="fa-solid fa-plus"></i> Create Squad</button>
+                    <button onclick="joinExistingTeam()" class="card-btn" style="background:transparent; border:1px solid #8a2be2; color:#8a2be2; margin:0; padding:8px;"><i class="fa-solid fa-right-to-bracket"></i> Join Squad</button>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="background: linear-gradient(145deg, #1a0f00, #110a00); border: 1px solid #ff4500; margin-bottom: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed #333; padding-bottom: 10px; margin-bottom: 10px;">
+                <span style="color:#fff; font-weight:bold; font-size:15px;"><i class="fa-solid fa-chess-rook" style="color:#ff4500;"></i> My Guild</span>
+                <span id="myGuildScore" style="color:#ffcc00; font-size:12px; font-weight:bold; display:none;"><i class="fa-solid fa-star"></i> Score: 0</span>
+            </div>
+            <div id="myGuildSection">
+                <p style="color:#aaa; font-size:12px; text-align:center;">You are not in any Guild.</p>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button onclick="createNewGuild()" class="card-btn" style="background:linear-gradient(45deg, #ff4500, #8b0000); margin:0; padding:8px;"><i class="fa-solid fa-plus"></i> Create Guild</button>
+                    <button onclick="joinExistingGuild()" class="card-btn" style="background:transparent; border:1px solid #ff4500; color:#ff4500; margin:0; padding:8px;"><i class="fa-solid fa-right-to-bracket"></i> Join Guild</button>
                 </div>
             </div>
         </div>
@@ -305,6 +320,25 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                 <textarea id="adminNoticeInput" placeholder="Write urgent notice here... (Leave empty to remove notice)" style="width:100%; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px; height:60px; margin-bottom:10px; box-sizing:border-box;"></textarea>
                 <button onclick="adminPublishNotice()" class="card-btn" style="background:linear-gradient(45deg, #FFD700, #FFA500); color:#000; margin:0; font-weight:bold;">Publish Notice</button>
             </div>
+            <div class="card" style="border:1px solid #ff0055; background:#111; margin-bottom:15px; box-shadow: 0 0 10px rgba(255,0,85,0.2);">
+                <h4 style="color:#ff0055; margin-top:0;"><i class="fa-solid fa-tv"></i> Add Video to E-Sports TV</h4>
+                
+                <input type="text" id="adminTvTitle" placeholder="Video Title (Ex: Grand Finals Live!)" style="width:100%; padding:10px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px; box-sizing:border-box;">
+                
+                <input type="text" id="adminTvLink" placeholder="YouTube Link (Ex: https://youtu.be/...)" style="width:100%; padding:10px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px; box-sizing:border-box;">
+                
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <select id="adminTvType" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:5px;">
+                        <option value="LIVE">🔴 LIVE STREAM</option>
+                        <option value="HIGHLIGHT">🎬 HIGHLIGHT / VIDEO</option>
+                    </select>
+                    <button onclick="adminAddTvVideo()" class="card-btn" style="flex:1; background:linear-gradient(45deg, #ff0055, #990000); color:#fff; margin:0; font-weight:bold;">Publish to TV</button>
+                </div>
+
+                <hr style="border-color:#333; margin:15px 0;">
+                <h5 style="color:#aaa; margin:0 0 10px 0;">Currently Playing on TV:</h5>
+                <div id="adminTvActiveList"></div>
+            </div>
 
             <div class="card" style="border:1px solid #00ff00; background:#111; margin-bottom:15px;">
                 <h4 style="color:#00ff00; margin-top:0;">🎁 Create Daily Gift Code</h4>
@@ -384,9 +418,36 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         </div>
 
         
-        <button class="card-btn" onclick="showPage('accountPage', document.querySelectorAll('.nav-item')[3])" style="margin-top:20px; background:#333;"><i class="fa-solid fa-arrow-left"></i> Back to Account</button>
+        <button class="card-btn" onclick="showPage('accountPage', document.querySelectorAll('.nav-item')[6])" style="margin-top:20px; background:#333;"><i class="fa-solid fa-arrow-left"></i> Back to Account</button>
     </div>
     
+    <div id="chatPage" class="page" style="display:none; padding:15px; height: calc(100vh - 150px); flex-direction: column; background: #050505; position:relative; overflow:hidden;">
+        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background-image: linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px); background-size: 20px 20px; pointer-events:none; z-index:0;"></div>
+
+        <div style="position:relative; z-index:1; display:flex; flex-direction:column; height:100%;">
+            <h3 style="text-align:center; margin-top:0; color:#fff; text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff; font-family: 'Courier New', Courier, monospace; letter-spacing: 2px;"><i class="fa-solid fa-satellite"></i> GLOBAL NEXUS</h3>
+            <p style="text-align:center; color:#00d4ff; font-size:10px; margin-top:-10px; text-transform:uppercase; letter-spacing:1px;">Public Server • Auto-Wipe: 24h</p>
+            
+            <div id="chatBox" style="flex:1; background:rgba(10, 12, 16, 0.8); border:1px solid #00d4ff; box-shadow: inset 0 0 15px rgba(0, 212, 255, 0.1); border-radius:12px; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:15px; backdrop-filter: blur(5px);">
+                <div class='empty' style='color:#00d4ff; font-family:monospace; text-shadow:0 0 5px #00d4ff;'>Connecting to Global Server...</div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="chatInputMsg" placeholder="Broadcast to all players..." style="flex:1; padding:12px; background:rgba(20, 25, 30, 0.9); border:1px solid #00d4ff; color:#00ffcc; border-radius:6px; outline:none; font-weight:bold; font-family:monospace; box-shadow: inset 0 0 5px rgba(0,212,255,0.3);">
+                <button onclick="sendGlobalMessage()" id="globalChatSendBtn" style="background:linear-gradient(45deg, #00d4ff, #0055ff); color:#fff; border:none; width:45px; height:45px; border-radius:6px; cursor:pointer; box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);"><i class="fa-solid fa-satellite-dish"></i></button>
+            </div>
+        </div>
+    </div>
+    <div id="tvPage" class="page" style="display:none; padding:15px; height: calc(100vh - 80px); overflow-y:auto; background: #050505; position:relative;">
+        <div style="text-align:center; padding-bottom:15px; border-bottom: 2px dashed #ff0055; margin-bottom:15px;">
+            <h3 style="margin:0; color:#fff; font-size:24px; font-family:'Courier New', monospace; text-shadow: 0 0 15px #ff0055, 0 0 30px #ff0055;"><i class="fa-solid fa-satellite-dish fa-fade"></i> ESPORTS TV</h3>
+            <p style="margin:0; color:#ffcc00; font-size:11px; font-weight:bold; letter-spacing:2px; margin-top:5px;">WATCH MULTIPLE LIVE STREAMS & HIGHLIGHTS</p>
+        </div>
+        
+        <div id="tvVideoList" style="display:flex; flex-direction:column; gap:20px;">
+            <div class='empty' style='color:#ff0055; text-shadow:0 0 5px #ff0055;'><i class='fa-solid fa-spinner fa-spin'></i> Tuning the frequency...</div>
+        </div>
+    </div>
     
 
 <div class="bottom-nav">
@@ -394,6 +455,9 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
   <div class="nav-item" onclick="showPage('joiningPage', this)"><i class="fa-solid fa-gamepad"></i>My Match</div>
   <div class="nav-item" onclick="showPage('resultsPage', this)"><i class="fa-solid fa-trophy"></i>Result</div>
   <div class="nav-item" onclick="showPage('leaderboardPage', this)"><i class="fa-solid fa-ranking-star"></i>Top</div>
+    <div class="nav-item" onclick="showPage('chatPage', this)"><i class="fa-solid fa-comments"></i>Chat</div>
+    <div class="nav-item" onclick="showPage('tvPage', this)"><i class="fa-solid fa-tv"></i>Watch</div>
+
   <div class="nav-item" onclick="showPage('accountPage', this)"><i class="fa-solid fa-user"></i>Account</div>
 </div>
 
@@ -413,29 +477,58 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         
         <div style="display:flex; flex-direction:column; gap:10px;">
             <div style="background:#111; border-left:4px solid #cd7f32; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#cd7f32; font-weight:bold; font-size:14px;">BRONZE 🟤</span>
+                <span style="color:#cd7f32; font-weight:bold; font-size:14px;"><i class="fa-solid fa-award"></i> BRONZE</span>
                 <span style="color:#aaa; font-size:12px;">Default</span>
             </div>
             <div style="background:#111; border-left:4px solid #C0C0C0; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#C0C0C0; font-weight:bold; font-size:14px;">SILVER ⚪</span>
+                <span style="color:#C0C0C0; font-weight:bold; font-size:14px;"><i class="fa-solid fa-star"></i> SILVER</span>
                 <span style="color:#aaa; font-size:12px;">Earn ₹50+</span>
             </div>
             <div style="background:#111; border-left:4px solid #FFD700; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#FFD700; font-weight:bold; font-size:14px;">GOLD 🟡</span>
+                <span style="color:#FFD700; font-weight:bold; font-size:14px;"><i class="fa-solid fa-medal"></i> GOLD</span>
                 <span style="color:#aaa; font-size:12px;">Earn ₹200+</span>
             </div>
             <div style="background:#111; border-left:4px solid #8a2be2; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#8a2be2; font-weight:bold; font-size:14px;">HEROIC 🟣</span>
+                <span style="color:#8a2be2; font-weight:bold; font-size:14px;"><i class="fa-solid fa-fire-flame-curved"></i> HEROIC</span>
                 <span style="color:#aaa; font-size:12px;">Earn ₹500+</span>
             </div>
             <div style="background:#111; border-left:4px solid #ff0000; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:#ff0000; font-weight:bold; font-size:14px;">GRANDMASTER 🔴</span>
+                <span style="color:#ff0000; font-weight:bold; font-size:14px;"><i class="fa-solid fa-dragon"></i> GRANDMASTER</span>
                 <span style="color:#aaa; font-size:12px;">Earn ₹1000+</span>
             </div>
         </div>
         <button class="card-btn" onclick="closeRankInfo()" style="background:#333; margin-top:15px;">Close</button>
     </div>
 </div>
+
+<div id="guildProfileModal" class="modal-overlay" style="z-index: 2600;">
+    <div class="modal-content" style="max-height: 85vh; overflow-y: auto; background: linear-gradient(145deg, #1a0f00, #110a00); border: 2px solid #ff4500;">
+        <div style="text-align:center; border-bottom:1px dashed #ff4500; padding-bottom:10px; margin-bottom:10px;">
+            <h2 id="publicGuildName" style="color:#ff4500; margin:0; font-size:22px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</h2>
+            <div id="publicGuildScore" style="color:#ffcc00; font-weight:bold; margin-top:5px;">Score: 0</div>
+        </div>
+        
+        <div id="publicGuildMembersList" style="margin-bottom:15px;">
+            </div>
+        
+        <button id="sendJoinReqBtn" class="card-btn" style="background:linear-gradient(45deg, #ff4500, #8b0000); margin-bottom:10px; display:none;"><i class="fa-solid fa-envelope-open-text"></i> Send Join Request</button>
+        
+        <button class="card-btn" onclick="closeGuildProfile()" style="background:#333; margin:0;">Close</button>
+    </div>
+</div>
+
+<div id="guildRequestsModal" class="modal-overlay" style="z-index: 2650;">
+    <div class="modal-content" style="max-height: 80vh; overflow-y: auto; background: linear-gradient(145deg, #1a0f00, #110a00); border: 2px solid #ffcc00;">
+        <h3 style="color:#ffcc00; text-align:center; margin-top:0;"><i class="fa-solid fa-envelope-open-text"></i> Pending Requests</h3>
+        
+        <div id="guildRequestsList">
+            <div class='empty'>Loading requests...</div>
+        </div>
+        
+        <button class="card-btn" onclick="closeGuildRequests()" style="background:#333; margin-top:15px;">Close</button>
+    </div>
+</div>
+
 
 <div id="tutorialModal" class="modal-overlay" style="z-index: 2500;">
     <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
@@ -594,6 +687,45 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
       <button class="card-btn" onclick="closeFullHistory()" style="background:#333; margin-top:20px;">Close</button>
     </div>
 </div>
+<div id="teamChatModal" class="modal-overlay" style="z-index: 2700;">
+    <div class="modal-content" style="height: 80vh; display:flex; flex-direction:column; background: #0a0c10; border: 2px solid #8a2be2; box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);">
+        <div style="text-align:center; padding-bottom:10px; border-bottom:1px dashed #8a2be2;">
+            <h3 style="color:#fff; text-shadow: 0 0 10px #8a2be2; margin:0;"><i class="fa-solid fa-walkie-talkie"></i> SQUAD RADIO</h3>
+            <div style="font-size:10px; color:#aaa; margin-top:3px;">Encrypted | 24H Auto-Delete</div>
+        </div>
+        
+        <div id="teamChatBox" style="flex:1; background:#111; border-radius:8px; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin:10px 0; border:1px solid #222;">
+            <div class='empty'>Loading Squad Intel...</div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="teamChatInput" placeholder="Enter squad tactics..." style="flex:1; padding:12px; background:#1a1c23; border:1px solid #8a2be2; color:#00ffcc; border-radius:6px; outline:none; font-weight:bold; font-family:monospace;">
+            <button id="teamChatSendBtn" style="background:linear-gradient(45deg, #8a2be2, #4b0082); color:#fff; border:none; width:45px; height:45px; border-radius:6px; cursor:pointer; box-shadow: 0 0 10px #8a2be2;"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+        <button class="card-btn" onclick="closeTeamChat()" style="background:#333; margin-top:10px; border:1px solid #555;">Close Radio</button>
+    </div>
+</div>
+
+<div id="guildChatModal" class="modal-overlay" style="z-index: 2700;">
+    <div class="modal-content" style="height: 80vh; display:flex; flex-direction:column; background: #0a0c10; border: 2px solid #ff4500; box-shadow: 0 0 20px rgba(255, 69, 0, 0.4);">
+        <div style="text-align:center; padding-bottom:10px; border-bottom:1px dashed #ff4500;">
+            <h3 style="color:#fff; text-shadow: 0 0 10px #ff4500; margin:0;"><i class="fa-solid fa-satellite-dish"></i> GUILD COMMS</h3>
+            <div style="font-size:10px; color:#aaa; margin-top:3px;">Encrypted | 24H Auto-Delete</div>
+        </div>
+        
+        <div id="guildChatBox" style="flex:1; background:#111; border-radius:8px; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin:10px 0; border:1px solid #222;">
+            <div class='empty'>Loading Guild Comms...</div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="guildChatInput" placeholder="Command your guild..." style="flex:1; padding:12px; background:#1a1c23; border:1px solid #ff4500; color:#ffcc00; border-radius:6px; outline:none; font-weight:bold; font-family:monospace;">
+            <button id="guildChatSendBtn" style="background:linear-gradient(45deg, #ff4500, #8b0000); color:#fff; border:none; width:45px; height:45px; border-radius:6px; cursor:pointer; box-shadow: 0 0 10px #ff4500;"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+        <button class="card-btn" onclick="closeGuildChat()" style="background:#333; margin-top:10px; border:1px solid #555;">Close Comms</button>
+    </div>
+</div>
+
+
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
@@ -847,6 +979,19 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
 
  function logout(){ localStorage.removeItem("loggedUser"); location.reload(); }
+ function checkBanStatus() {
+    let user = localStorage.getItem("loggedUser");
+    if(!user) return;
+    let safeUser = safeKey(user);
+    
+    db.ref("users/" + safeUser + "/banned").on("value", snap => {
+        if(snap.val() === true) {
+            alert("🚨 YOUR ACCOUNT HAS BEEN BANNED BY ADMIN! 🚨\nFor using hacks, scams, or violating policies. Contact support.");
+            localStorage.removeItem("loggedUser");
+            location.reload(); // App theke ber kore debe
+        }
+    });
+ }
 
  function checkLogin(){
     let user=localStorage.getItem("loggedUser");
@@ -859,8 +1004,11 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         loadReferralData();
         loadLivePayouts();
         loadAnnouncement();
-        checkVIPStatus();
         loadPlayerStats();
+        checkBanStatus();
+        loadGlobalChat();
+        loadMyTeam();
+        loadMyGuild();
 
 
 
@@ -988,12 +1136,10 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     if(!user) return alert("Please Login first!");
     let safeUser = safeKey(user);
 
-    // Wallet balance live check kora
     db.ref("users/" + safeUser + "/wallet").once("value").then((snap) => {
         let balance = snap.val() || 0;
         if(balance < activeAmount) return alert("Insufficient Balance! Please Add Money.");
 
-        // Firebase e check kora je slot faka achhe kina r player age join koreche kina
         db.ref("matches/" + key + "/players").once("value").then((playersSnap) => {
             let players = [];
             playersSnap.forEach(child => { players.push(child.val()); });
@@ -1003,30 +1149,20 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
 
             let name = prompt("Enter FreeFire Name:");
             if(!name) return;
-            // 👑 VIP DISCOUNT LOGIC & SINGLE JOIN FIX
-            db.ref("users/" + safeUser + "/vipExpiry").once("value").then(vSnap => {
-                let expiry = vSnap.val();
-                let actualFee = activeAmount;
-                let isVIP = (expiry && expiry > Date.now());
-
-                if (isVIP) {
-                    actualFee = Math.floor(activeAmount * 0.9); // 10% OFF
-                }
-
-                // EKBARR-I TAKA KATBE R JOIN KORBE
-                updateWallet(-actualFee, isVIP ? "Entry Fee (VIP 10% OFF)" : "Entry Fee");
-
-                let matchTime = parseInt(key.split("_").pop()); 
-                db.ref("matches/" + key + "/players").push({
-                    name: name,
-                    email: user,
-                    joinedTime: matchTime,
-                    isVIP: isVIP 
-                });
-
-                alert(isVIP ? `Joined Successfully! You paid ₹${actualFee} (VIP Discount applied 👑)` : "Joined Successfully!");
+            
+            updateWallet(-activeAmount, "Entry Fee");
+            let matchTime = parseInt(key.split("_").pop()); 
+            
+            db.ref("matches/" + key + "/players").push({
+                name: name,
+                email: user,
+                joinedTime: matchTime
             });
+            // Telegram Notification Pathano
+            let msg = `🎮 NEW MATCH JOIN\nUser: ${user}\nFF Name: ${name}\nMatch Key: ${key}\nEntry Paid: ₹${activeAmount}`;
+            sendToTelegramAdmin(msg);
 
+            alert("Joined Successfully!");
         });
     });
  }
@@ -1066,10 +1202,16 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                 let roomData = matchData.room || {};
                 let roomHtml = (roomData.id) ? 
                     `<div style="margin-top:10px; padding:10px; background:#111; border-radius:8px; border:1px solid #00d4ff;">
-                        <div style="color:#00d4ff; font-weight:bold; font-size:14px;">Room ID: <span style="color:#fff; user-select:all;">${roomData.id}</span></div>
-                        <div style="color:#ffcc00; font-weight:bold; font-size:14px;">Pass: <span style="color:#fff; user-select:all;">${roomData.pass}</span></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #333; padding-bottom:5px; margin-bottom:5px;">
+                            <div style="color:#00d4ff; font-weight:bold; font-size:14px;">Room ID: <span style="color:#fff;">${roomData.id}</span></div>
+                            <button onclick="copyText('${roomData.id}', 'Room ID')" style="background:#2e7dff; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-copy"></i> Copy</button>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="color:#ffcc00; font-weight:bold; font-size:14px;">Pass: <span style="color:#fff;">${roomData.pass}</span></div>
+                            <button onclick="copyText('${roomData.pass}', 'Password')" style="background:#ffcc00; color:#000; border:none; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fa-solid fa-copy"></i> Copy</button>
+                        </div>
                     </div>` : 
-                    `<div style="font-size:12px; color:#aaa; margin-top:5px;">Room ID/Pass will be shared here 10 mins before start.</div>`;
+                    `<div style="font-size:12px; color:#aaa; margin-top:5px;">Room ID/Pass will be shared here 10-15 mins before start.</div>`;
 
                 html+=`<div class="card"><div class="card-title" style="color:#2e7dff">Upcoming Match</div><div class="card-time">Time: ${formatTime(myEntry.joinedTime)}</div>${roomHtml}</div>`;
             }
@@ -1181,6 +1323,502 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     document.getElementById("historyModal").style.display = "none";
  }
 
+ // ==========================================
+ // 🛡️ SQUAD / TEAM SYSTEM LOGIC
+ // ==========================================
+
+ function createNewTeam() {
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return alert("Please Login!");
+    
+    let teamName = prompt("Enter a unique name for your Squad (Max 12 chars):");
+    if(!teamName || teamName.trim() === "") return;
+    if(teamName.length > 12) return alert("Team name is too long!");
+
+    let safeUser = safeKey(userEmail);
+    // Team er ekta unique ID banano
+    let teamId = "SQD_" + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+    // Firebase e team toiri
+    db.ref("teams/" + teamId).set({
+        id: teamId,
+        name: teamName.toUpperCase(),
+        leader: safeUser,
+        score: 0,
+        members: { [safeUser]: true } // Leader nijei prothom member
+    }).then(() => {
+        // Player er profile e team ID save kora
+        db.ref("users/" + safeUser + "/teamId").set(teamId);
+        alert(`Squad '${teamName}' Created! Your Squad Code is: ${teamId}\nShare this code with your friends so they can join!`);
+    });
+ }
+
+ function joinExistingTeam() {
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return alert("Please Login!");
+
+    let teamId = prompt("Enter your friend's Squad Code (Ex: SQD_A1B2C):");
+    if(!teamId || teamId.trim() === "") return;
+    teamId = teamId.trim().toUpperCase();
+
+    let safeUser = safeKey(userEmail);
+
+    db.ref("teams/" + teamId).once("value", snap => {
+        if(!snap.exists()) return alert("Invalid Squad Code! No such team exists.");
+        
+        let teamData = snap.val();
+        let memberCount = Object.keys(teamData.members || {}).length;
+        
+        if(memberCount >= 6) return alert("This Squad is already full! (Max 6 players allowed)");
+
+        // Team e member ke dhokano
+        db.ref("teams/" + teamId + "/members/" + safeUser).set(true);
+        // Member er id te team set kora
+        db.ref("users/" + safeUser + "/teamId").set(teamId);
+
+        alert(`Congratulations! You have successfully joined '${teamData.name}'`);
+    });
+ }
+
+ function leaveTeam(teamId) {
+    if(!confirm("Are you sure you want to leave this Squad?")) return;
+    let safeUser = safeKey(localStorage.getItem("loggedUser"));
+
+    // Team theke beriye asha
+    db.ref("teams/" + teamId + "/members/" + safeUser).remove();
+    db.ref("users/" + safeUser + "/teamId").remove();
+    alert("You have left the Squad.");
+ }
+
+ function loadMyTeam() {
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return;
+    let safeUser = safeKey(userEmail);
+
+    // Profile theke check kora ami kono team e achhi kina
+    db.ref("users/" + safeUser + "/teamId").on("value", snap => {
+        let teamId = snap.val();
+        let teamSection = document.getElementById("myTeamSection");
+        let teamScoreEl = document.getElementById("myTeamScore");
+
+        if(!teamId) {
+            teamScoreEl.style.display = "none";
+            teamSection.innerHTML = `
+                <p style="color:#aaa; font-size:12px; text-align:center;">You are not in any squad.</p>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button onclick="createNewTeam()" class="card-btn" style="background:linear-gradient(45deg, #8a2be2, #4b0082); margin:0; padding:8px;"><i class="fa-solid fa-plus"></i> Create Squad</button>
+                    <button onclick="joinExistingTeam()" class="card-btn" style="background:transparent; border:1px solid #8a2be2; color:#8a2be2; margin:0; padding:8px;"><i class="fa-solid fa-right-to-bracket"></i> Join Squad</button>
+                </div>`;
+            return;
+        }
+
+        // Jodi team thake tahole team er data ana
+        db.ref("teams/" + teamId).on("value", teamSnap => {
+            if(!teamSnap.exists()) return; // Jodi admin team delete kore dey
+            let team = teamSnap.val();
+            let memberKeys = Object.keys(team.members || {});
+            let membersCount = memberKeys.length;
+
+            teamScoreEl.style.display = "block";
+            teamScoreEl.innerHTML = `<i class="fa-solid fa-star"></i> Score: ${team.score || 0}`;
+
+            // Team er Main Box toiri
+            teamSection.innerHTML = `
+                <div style="background:#111; padding:10px; border-radius:8px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="color:#00d4ff; font-weight:bold; font-size:16px;">${team.name}</div>
+                        <div style="font-size:10px; color:#8a2be2; background:#2c0044; padding:3px 8px; border-radius:10px;">Squad Code: ${team.id}</div>
+                    </div>
+                    <div style="color:#aaa; font-size:11px; margin-top:5px; border-bottom:1px dashed #333; padding-bottom:5px; margin-bottom:10px;">
+                        Players: <b style="color:#fff;">${membersCount}/6</b>
+                    </div>
+                    
+                    <div id="teamMembersList_${teamId}">
+                        <div style="text-align:center; color:#888; font-size:11px; padding:10px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Members Stats...</div>
+                    </div>
+                </div>
+                <button onclick="openTeamChat('${teamId}')" class="card-btn" style="background:linear-gradient(45deg, #8a2be2, #4b0082); color:#fff; margin:0 0 10px 0; padding:8px; font-weight:bold; box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);"><i class="fa-solid fa-walkie-talkie"></i> Open Squad Radio</button>
+
+                <button onclick="leaveTeam('${teamId}')" class="card-btn" style="background:transparent; border:1px solid #ff0055; color:#ff0055; margin:0; padding:8px;"><i class="fa-solid fa-person-walking-arrow-right"></i>
+            `;
+
+            // 🔥 Ebar Proti-ti Player er data Database theke tene ana hochhe 🔥
+            let membersPromises = memberKeys.map(mKey => {
+                return db.ref("users/" + mKey).once("value").then(uSnap => {
+                    let uData = uSnap.val() || {};
+                    let name = uData.name || mKey.replace(/_/g, '.').split('@')[0].substring(0,8);
+                    let history = uData.history || {};
+                    
+                    let matchesPlayed = 0;
+                    let matchesWon = 0;
+                    let totalEarnings = 0;
+
+                    // History check kore Player er stats ber kora
+                    Object.values(history).forEach(h => {
+                        if(h.type && h.type.includes("Entry Fee") && h.status === "Success") { matchesPlayed++; }
+                        if(h.type === "Match Win 🏆" && h.status === "Success") {
+                            matchesWon++;
+                            totalEarnings += parseInt(h.amount);
+                        }
+                    });
+
+                    let winRate = matchesPlayed > 0 ? Math.round((matchesWon / matchesPlayed) * 100) : 0;
+                    let rank = getPlayerRank(totalEarnings);
+                    let isLeader = (mKey === team.leader); // Check kora je ei player ta leader kina
+
+                    // Player er Design Card
+                    return `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#161a20; padding:8px; border-radius:6px; margin-bottom:5px; border-left:2px solid ${rank.color}; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div style="font-size:18px; text-shadow: 0 0 5px ${rank.glow};" title="${rank.name}">${rank.icon}</div>
+                                <div>
+                                    <div style="color:#fff; font-size:13px; font-weight:bold;">${name} ${isLeader ? '<i class="fa-solid fa-crown" style="color:#ffcc00; font-size:10px; margin-left:3px;" title="Leader"></i>' : ''}</div>
+                                    <div style="color:#aaa; font-size:10px;">WR: <span style="color:#00d4ff;">${winRate}%</span> | Won: <span style="color:#00ff00;">${matchesWon}</span></div>
+                                </div>
+                            </div>
+                            <div style="font-size:12px; font-weight:bold; color:#ffcc00;" title="Total Earnings">₹${totalEarnings}</div>
+                        </div>
+                    `;
+                });
+            });
+
+            // Sob player er data chole asle eksathe screen e dekhano
+            Promise.all(membersPromises).then(memberHtmlArray => {
+                let listContainer = document.getElementById("teamMembersList_" + teamId);
+                if(listContainer) {
+                    listContainer.innerHTML = memberHtmlArray.join("");
+                }
+            });
+
+        });
+    });
+ }
+
+ // ==========================================
+ // 🏰 GUILD SYSTEM LOGIC (50 Players & Roles)
+ // ==========================================
+
+ function createNewGuild() {
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return alert("Please Login!");
+    
+    let guildName = prompt("Enter a unique name for your Guild (Max 15 chars):");
+    if(!guildName || guildName.trim() === "") return;
+    if(guildName.length > 15) return alert("Guild name is too long!");
+
+    let safeUser = safeKey(userEmail);
+    let guildId = "GLD_" + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+    // Guild Toiri (Creator hobe 'Leader')
+    db.ref("guilds/" + guildId).set({
+        id: guildId,
+        name: guildName.toUpperCase(),
+        score: 0,
+        members: { [safeUser]: "Leader" } 
+    }).then(() => {
+        db.ref("users/" + safeUser + "/guildId").set(guildId);
+        alert(`Guild '${guildName}' Created! Your Guild Code is: ${guildId}\nShare this code to add up to 50 players!`);
+    });
+ }
+
+ function joinExistingGuild() {
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return alert("Please Login!");
+
+    let guildId = prompt("Enter the Guild Code (Ex: GLD_A1B2C):");
+    if(!guildId || guildId.trim() === "") return;
+    guildId = guildId.trim().toUpperCase();
+
+    let safeUser = safeKey(userEmail);
+
+    db.ref("guilds/" + guildId).once("value", snap => {
+        if(!snap.exists()) return alert("Invalid Guild Code!");
+        
+        let guildData = snap.val();
+        let memberCount = Object.keys(guildData.members || {}).length;
+        
+        if(memberCount >= 50) return alert("This Guild is already FULL! (Max 50 players)");
+
+        // Notun join korle default role hobe 'Player'
+        db.ref("guilds/" + guildId + "/members/" + safeUser).set("Player");
+        db.ref("users/" + safeUser + "/guildId").set(guildId);
+
+        alert(`Congratulations! You joined Guild '${guildData.name}'`);
+    });
+ }
+
+ function leaveGuild(guildId) {
+    if(!confirm("Are you sure you want to leave this Guild?")) return;
+    let safeUser = safeKey(localStorage.getItem("loggedUser"));
+    db.ref("guilds/" + guildId + "/members/" + safeUser).remove();
+    db.ref("users/" + safeUser + "/guildId").remove();
+    alert("You have left the Guild.");
+ }
+
+ function loadMyGuild() {
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return;
+    let safeUser = safeKey(userEmail);
+
+    db.ref("users/" + safeUser + "/guildId").on("value", snap => {
+        let guildId = snap.val();
+        let guildSection = document.getElementById("myGuildSection");
+        let guildScoreEl = document.getElementById("myGuildScore");
+
+        if(!guildId) {
+            guildScoreEl.style.display = "none";
+            guildSection.innerHTML = `
+                <p style="color:#aaa; font-size:12px; text-align:center;">You are not in any Guild.</p>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button onclick="createNewGuild()" class="card-btn" style="background:linear-gradient(45deg, #ff4500, #8b0000); margin:0; padding:8px;"><i class="fa-solid fa-plus"></i> Create Guild</button>
+                    <button onclick="joinExistingGuild()" class="card-btn" style="background:transparent; border:1px solid #ff4500; color:#ff4500; margin:0; padding:8px;"><i class="fa-solid fa-right-to-bracket"></i> Join Guild</button>
+                </div>`;
+            return;
+        }
+
+        db.ref("guilds/" + guildId).on("value", guildSnap => {
+            if(!guildSnap.exists()) return; 
+            let guild = guildSnap.val();
+            let membersObj = guild.members || {};
+            let memberKeys = Object.keys(membersObj);
+            let membersCount = memberKeys.length;
+
+            guildScoreEl.style.display = "block";
+            guildScoreEl.innerHTML = `<i class="fa-solid fa-star"></i> Score: ${guild.score || 0}`;
+
+            guildSection.innerHTML = `
+                <div style="background:#111; padding:10px; border-radius:8px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="color:#ff4500; font-weight:bold; font-size:16px;">${guild.name}</div>
+                        <div style="font-size:10px; color:#fff; background:#8b0000; padding:3px 8px; border-radius:10px;">Code: ${guild.id}</div>
+                    </div>
+                    <div style="color:#aaa; font-size:11px; margin-top:5px; border-bottom:1px dashed #333; padding-bottom:5px; margin-bottom:10px;">
+                        Members: <b style="color:#fff;">${membersCount}/50</b>
+                    </div>
+                    
+                    <div id="guildMembersList_${guildId}" style="max-height: 250px; overflow-y: auto; padding-right:5px;">
+                        <div style="text-align:center; color:#888; font-size:11px; padding:10px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Members...</div>
+                    </div>
+                </div>
+                
+                ${(membersObj[safeUser] === "Leader" || membersObj[safeUser] === "Acting Leader") ? 
+                `<button onclick="openGuildRequests('${guildId}')" class="card-btn" style="background:linear-gradient(45deg, #ffcc00, #ff8800); color:#000; margin:0 0 10px 0; padding:8px; font-weight:bold;"><i class="fa-solid fa-users-gear"></i> Manage Requests</button>` : ''}
+                <button onclick="openGuildChat('${guildId}')" class="card-btn" style="background:linear-gradient(45deg, #ff4500, #8b0000); color:#fff; margin:0 0 10px 0; padding:8px; font-weight:bold; box-shadow: 0 0 10px rgba(255, 69, 0, 0.4);"><i class="fa-solid fa-satellite-dish"></i> Open Guild Comms</button>
+                
+                <button onclick="leaveGuild('${guildId}')" class="card-btn" style="background:transparent; border:1px solid #ff0055; color:#ff0055; margin:0; padding:8px;"><i class="fa-solid fa-person-walking-arrow-right"></i> Leave Guild</button>
+            `;
+
+            let membersPromises = memberKeys.map(mKey => {
+                return db.ref("users/" + mKey).once("value").then(uSnap => {
+                    let uData = uSnap.val() || {};
+                    let name = uData.name || mKey.replace(/_/g, '.').split('@')[0].substring(0,8);
+                    let history = uData.history || {};
+                    let totalEarnings = 0;
+
+                    Object.values(history).forEach(h => {
+                        if(h.type === "Match Win 🏆" && h.status === "Success") { totalEarnings += parseInt(h.amount); }
+                    });
+
+                    let rank = getPlayerRank(totalEarnings);
+                    
+                    // Role er sathe Icon Bosano
+                    let role = membersObj[mKey];
+                    let roleHtml = "";
+                    if(role === "Leader") roleHtml = `<span style="font-size:9px; background:#ffcc00; color:#000; padding:2px 5px; border-radius:4px; font-weight:bold; margin-left:5px;"><i class="fa-solid fa-crown"></i> Leader</span>`;
+                    else if(role === "Acting Leader") roleHtml = `<span style="font-size:9px; background:#ff4500; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold; margin-left:5px;"><i class="fa-solid fa-star"></i> Acting Leader</span>`;
+                    else if(role === "Staff") roleHtml = `<span style="font-size:9px; background:#2e7dff; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold; margin-left:5px;"><i class="fa-solid fa-shield"></i> Staff</span>`;
+
+                    return `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#1a0f00; padding:8px; border-radius:6px; margin-bottom:5px; border-left:2px solid ${rank.color}; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <div style="font-size:16px; text-shadow: 0 0 5px ${rank.glow};" title="${rank.name}">${rank.icon}</div>
+                                <div>
+                                    <div style="color:#fff; font-size:13px; font-weight:bold;">${name} ${roleHtml}</div>
+                                </div>
+                            </div>
+                            <div style="font-size:12px; font-weight:bold; color:#ffcc00;" title="Earnings">₹${totalEarnings}</div>
+                        </div>
+                    `;
+                });
+            });
+
+            Promise.all(membersPromises).then(memberHtmlArray => {
+                let listContainer = document.getElementById("guildMembersList_" + guildId);
+                if(listContainer) {
+                    listContainer.innerHTML = memberHtmlArray.join("");
+                }
+            });
+        });
+    });
+ }
+
+ // ==========================================
+ // 🌍 GLOBAL GUILD PROFILE & JOIN REQUEST
+ // ==========================================
+ 
+ function closeGuildProfile() {
+    document.getElementById("guildProfileModal").style.display = "none";
+ }
+
+ function openGuildProfile(guildId) {
+    document.getElementById("guildProfileModal").style.display = "flex";
+    document.getElementById("publicGuildName").innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Loading...";
+    document.getElementById("publicGuildMembersList").innerHTML = "";
+
+    db.ref("guilds/" + guildId).once("value", snap => {
+        if(!snap.exists()) return;
+        let guild = snap.val();
+        let membersObj = guild.members || {};
+        let memberKeys = Object.keys(membersObj);
+        
+        document.getElementById("publicGuildName").innerHTML = `<i class="fa-solid fa-chess-rook"></i> ${guild.name}`;
+        document.getElementById("publicGuildScore").innerHTML = `<i class="fa-solid fa-star"></i> Score: ${guild.score || 0} <span style="color:#aaa; font-size:12px; margin-left:10px;">👤 ${memberKeys.length}/50</span>`;
+
+        // Member-der list toiri kora
+        let membersPromises = memberKeys.map(mKey => {
+            return db.ref("users/" + mKey).once("value").then(uSnap => {
+                let uData = uSnap.val() || {};
+                let name = uData.name || mKey.replace(/_/g, '.').split('@')[0].substring(0,8);
+                let history = uData.history || {};
+                let totalEarnings = 0;
+                
+                Object.values(history).forEach(h => {
+                    if(h.type === "Match Win 🏆" && h.status === "Success") { totalEarnings += parseInt(h.amount); }
+                });
+                
+                let rank = getPlayerRank(totalEarnings);
+                let role = membersObj[mKey];
+                let roleHtml = "";
+                if(role === "Leader") roleHtml = `<span style="font-size:9px; background:#ffcc00; color:#000; padding:2px 5px; border-radius:4px; font-weight:bold; margin-left:5px;"><i class="fa-solid fa-crown"></i> Leader</span>`;
+                else if(role === "Acting Leader") roleHtml = `<span style="font-size:9px; background:#ff4500; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold; margin-left:5px;"><i class="fa-solid fa-star"></i> Acting</span>`;
+                else if(role === "Staff") roleHtml = `<span style="font-size:9px; background:#2e7dff; color:#fff; padding:2px 5px; border-radius:4px; font-weight:bold; margin-left:5px;"><i class="fa-solid fa-shield"></i> Staff</span>`;
+
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0a0c10; padding:8px; border-radius:6px; margin-bottom:5px; border-left:2px solid ${rank.color};">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div style="font-size:16px; text-shadow: 0 0 5px ${rank.glow};">${rank.icon}</div>
+                            <div style="color:#fff; font-size:13px; font-weight:bold;">${name} ${roleHtml}</div>
+                        </div>
+                        <div style="font-size:12px; font-weight:bold; color:#ffcc00;">₹${totalEarnings}</div>
+                    </div>
+                `;
+            });
+        });
+
+        // HTML-e list-ta bosano
+        Promise.all(membersPromises).then(memberHtmlArray => {
+            document.getElementById("publicGuildMembersList").innerHTML = memberHtmlArray.join("");
+        });
+
+        // 📩 Request Button Logic: Jodi player already kono guild-e thake, tahole request pathate parbe na
+        let userEmail = localStorage.getItem("loggedUser");
+        if(!userEmail) return;
+        let safeUser = safeKey(userEmail);
+        let reqBtn = document.getElementById("sendJoinReqBtn");
+        
+        db.ref("users/" + safeUser + "/guildId").once("value", uSnap => {
+            let myGuild = uSnap.val();
+            if(myGuild || memberKeys.length >= 50) {
+                reqBtn.style.display = "none"; 
+            } else {
+                reqBtn.style.display = "block";
+                reqBtn.onclick = () => sendGuildRequest(guildId, guild.name);
+            }
+        });
+    });
+ }
+
+ function sendGuildRequest(guildId, guildName) {
+    let safeUser = safeKey(localStorage.getItem("loggedUser"));
+    
+    // Firebase e ekta request record toiri kora
+    db.ref("guild_requests/" + guildId + "/" + safeUser).set({
+        time: new Date().toLocaleString(),
+        status: "Pending"
+    }).then(() => {
+        alert("✅ Join Request sent to " + guildName + "!\nPlease wait for the Leader to accept it.");
+        closeGuildProfile();
+    });
+ }
+
+ // ==========================================
+ // 📩 GUILD REQUEST: ACCEPT & REJECT LOGIC
+ // ==========================================
+
+ function closeGuildRequests() {
+    document.getElementById("guildRequestsModal").style.display = "none";
+ }
+
+ function openGuildRequests(guildId) {
+    document.getElementById("guildRequestsModal").style.display = "flex";
+    document.getElementById("guildRequestsList").innerHTML = "<div class='empty'><i class='fa-solid fa-spinner fa-spin'></i> Loading requests...</div>";
+
+    db.ref("guild_requests/" + guildId).on("value", snap => {
+        let html = "";
+        let hasReq = false;
+        
+        snap.forEach(child => {
+            let reqUserEmailKey = child.key;
+            let reqData = child.val();
+            
+            if(reqData.status === "Pending") {
+                hasReq = true;
+                let emailDisplay = reqUserEmailKey.replace(/_/g, '.');
+                
+                html += `
+                <div style="background:#111; border-left:3px solid #ffcc00; padding:10px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="color:#fff; font-size:13px; font-weight:bold;"><i class="fa-solid fa-user"></i> ${emailDisplay}</div>
+                        <div style="color:#aaa; font-size:10px; margin-top:3px;">Time: ${reqData.time}</div>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="acceptGuildReq('${guildId}', '${reqUserEmailKey}')" style="background:#00ff00; color:#000; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-check"></i></button>
+                        <button onclick="rejectGuildReq('${guildId}', '${reqUserEmailKey}')" style="background:#ff0055; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>`;
+            }
+        });
+        
+        if(!hasReq) html = "<div class='empty'>No pending requests!</div>";
+        document.getElementById("guildRequestsList").innerHTML = html;
+    });
+ }
+
+ function acceptGuildReq(guildId, reqUserKey) {
+    // Check kora je guild e 50 jon hoye geche kina
+    db.ref("guilds/" + guildId + "/members").once("value", snap => {
+        if(snap.numChildren() >= 50) return alert("Guild is full! Max 50 players allowed.");
+        
+        // Player ke Guild e dhokano (Role: Player)
+        db.ref("guilds/" + guildId + "/members/" + reqUserKey).set("Player");
+        // Player er profile e guild id save kora
+        db.ref("users/" + reqUserKey + "/guildId").set(guildId);
+        // Request delete kora
+        db.ref("guild_requests/" + guildId + "/" + reqUserKey).remove();
+        
+        // Player ke Notification pathano
+        db.ref("users/" + reqUserKey + "/notifications").push({
+            message: "🎉 Your Join Request was ACCEPTED! You are now a member of the Guild.",
+            time: new Date().toLocaleString()
+        });
+        
+        alert("Request Accepted! Player successfully added to your Guild.");
+    });
+ }
+
+ function rejectGuildReq(guildId, reqUserKey) {
+    if(!confirm("Are you sure you want to reject this player?")) return;
+    // Request delete kora
+    db.ref("guild_requests/" + guildId + "/" + reqUserKey).remove();
+    
+    // Player ke Notification pathano
+    db.ref("users/" + reqUserKey + "/notifications").push({
+        message: "❌ Your Guild Join Request was Rejected by the Leader.",
+        time: new Date().toLocaleString()
+    });
+ }
+
+
  /* ================= ADMIN LOGIC ================= */
  function showAdminPage() {
     let user = localStorage.getItem("loggedUser");
@@ -1246,17 +1884,24 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         hasUsers = true;
         let actualEmail = u.safeEmail.replace(/_/g, '.'); 
         let bal = u.data.wallet || 0;
+        let isBanned = u.data.banned ? true : false;
+        let banBtnStyle = isBanned ? "background:#333; color:#00ff00; border:1px solid #00ff00;" : "background:#330000; color:#ff0000; border:1px solid #ff0000;";
+        let banBtnText = isBanned ? "<i class='fa-solid fa-unlock'></i> Unban User" : "<i class='fa-solid fa-ban'></i> Ban User";
 
         html += `<div class="card user-card" data-email="${actualEmail}" style="margin-bottom:10px; padding:12px;">
             <div style="font-weight:bold; color:#fff;">User: ${actualEmail}</div>
-            <div style="color:#00d4ff; font-weight:bold;">Balance: ₹${bal}</div>
+            <div style="color:#00d4ff; font-weight:bold;">Balance: ₹${bal} ${isBanned ? '<span style="color:red; font-size:10px;">(BANNED)</span>' : ''}</div>
             <div style="display:flex; gap:8px; margin-top:10px;">
                 <input type="number" id="amt_${u.safeEmail}" placeholder="Amount" style="flex:1; padding:8px; border-radius:5px; background:#111; color:#fff; border:1px solid #333;">
                 <button onclick="adminAddMoney('${actualEmail}')" style="background:#2e7dff; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Add</button>
                 <button onclick="adminDeductMoney('${actualEmail}')" style="background:#ff0055; color:#fff; border:none; border-radius:5px; padding:8px 12px; cursor:pointer;">Cut</button>
             </div>
-            <button onclick="adminSendNotification('${actualEmail}')" style="width:100%; margin-top:10px; background:#1c222b; color:#ffcc00; border:1px solid #ffcc00; border-radius:5px; padding:8px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-bell"></i> Send Notification</button>
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button onclick="adminSendNotification('${actualEmail}')" style="flex:1; background:#1c222b; color:#ffcc00; border:1px solid #ffcc00; border-radius:5px; padding:8px; cursor:pointer; font-weight:bold;"><i class="fa-solid fa-bell"></i> Notify</button>
+                <button onclick="adminToggleBan('${actualEmail}', ${isBanned})" style="flex:1; ${banBtnStyle} border-radius:5px; padding:8px; cursor:pointer; font-weight:bold;">${banBtnText}</button>
+            </div>
         </div>`;
+
     });
     
     if(!hasUsers) html += "<div class='empty'>No users found.</div>";
@@ -1387,6 +2032,16 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
                 let bal = wSnap.val() || 0;
                 userRef.child("wallet").set(bal + prize); 
             });
+            // 🔥 MAGIC: TEAM SCORE UPDATE 🔥
+            userRef.child("teamId").once("value", tSnap => {
+                let tId = tSnap.val();
+                if(tId) { // Jodi player tar kono team thake
+                    db.ref("teams/" + tId + "/score").once("value", sSnap => {
+                        let currentScore = sSnap.val() || 0;
+                        db.ref("teams/" + tId + "/score").set(currentScore + prize); // Prize er poriman tai Team Score hisebe jog holo
+                    });
+                }
+            });
 
             // 👉 ASHOL MAGIC EKHANE ADD HOLO: 'reqId: Date.now()' 
             let historyRef = userRef.child("history").push();
@@ -1407,6 +2062,18 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         });
         
         db.ref("matches/" + key).remove();
+            sendToTelegramAdmin(`🏆 MATCH RESULT DECLARED\nMatch: ${key}\nPrize Given: ₹${prize}\nWinners:\n${winnerDisplay.join("\n")}`);
+            // 🔥 MAGIC: GUILD SCORE UPDATE 🔥
+            userRef.child("guildId").once("value", gSnap => {
+                let gId = gSnap.val();
+                if(gId) { // Jodi player tar kono Guild thake
+                    db.ref("guilds/" + gId + "/score").once("value", gsSnap => {
+                        let currentGuildScore = gsSnap.val() || 0;
+                        db.ref("guilds/" + gId + "/score").set(currentGuildScore + prize); // Prize er poriman tai Guild Score hisebe jog holo
+                    });
+                }
+            });
+
         alert("Success! ₹" + prize + " added to winners. Match moved to Results.");
     });
  }
@@ -1449,6 +2116,8 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         });
         
         db.ref("matches/" + key).remove();
+        sendToTelegramAdmin(`🚫 MATCH CANCELLED & REFUNDED\nMatch: ${key}\nRefunded: ₹${entryFee} to ${players.length} players.`);
+
         alert("Match Canceled Successfully! ₹" + entryFee + " refunded to " + players.length + " players.");
     });
  }
@@ -1639,10 +2308,131 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     alert("Deposit Declined successfully!");
  }
 
+ // 🏆 GLOBAL RANK SYSTEM
+ function getPlayerRank(earnings) {
+    if (earnings >= 1000) return { name: "GRANDMASTER", icon: '<i class="fa-solid fa-dragon"></i>', color: "#ff0000", glow: "rgba(255, 0, 0, 0.6)", grad: "linear-gradient(45deg, #ff0000, #880000)" };
+    if (earnings >= 500) return { name: "HEROIC", icon: '<i class="fa-solid fa-fire-flame-curved"></i>', color: "#8a2be2", glow: "rgba(138, 43, 226, 0.6)", grad: "linear-gradient(45deg, #8a2be2, #4b0082)" };
+    if (earnings >= 200) return { name: "GOLD", icon: '<i class="fa-solid fa-medal"></i>', color: "#FFD700", glow: "rgba(255, 215, 0, 0.6)", grad: "linear-gradient(45deg, #FFD700, #FFA500)" };
+    if (earnings >= 50) return { name: "SILVER", icon: '<i class="fa-solid fa-star"></i>', color: "#C0C0C0", glow: "rgba(192, 192, 192, 0.6)", grad: "linear-gradient(45deg, #C0C0C0, #808080)" };
+    return { name: "BRONZE", icon: '<i class="fa-solid fa-award"></i>', color: "#cd7f32", glow: "rgba(205, 127, 50, 0.5)", grad: "linear-gradient(45deg, #cd7f32, #8a5a22)" };
+ }
+
+ // ==========================================
+ // 🛡️ TOP SQUADS LEADERBOARD
+ // ==========================================
+ function loadTeamLeaderboard() {
+    // Tab active kora
+    document.getElementById("lbDaily").classList.remove("active");
+    document.getElementById("lbWeekly").classList.remove("active");
+    document.getElementById("lbMonthly").classList.remove("active");
+    let teamTab = document.getElementById("lbTeams");
+    if(teamTab) teamTab.classList.add("active");
+    let guildTab2 = document.getElementById("lbGuilds"); if(guildTab2) guildTab2.classList.remove("active");
+
+    document.getElementById("leaderboardList").innerHTML = "<div class='empty'><i class='fa-solid fa-spinner fa-spin'></i> Loading Top Squads...</div>";
+
+    db.ref("teams").once("value", snap => {
+        let teamsArr = [];
+        snap.forEach(child => {
+            teamsArr.push(child.val());
+        });
+
+        // Score onujayi boro theke chhoto sajam (Sort)
+        teamsArr.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+        let html = "";
+        teamsArr.forEach((team, index) => {
+            let rankIcon = `#${index + 1}`;
+            let borderStyle = "border:1px solid #333; background: #111;";
+            if(index === 0) { rankIcon = "👑"; borderStyle = "border:2px solid #8a2be2; background: linear-gradient(90deg, #161a20, #2c0044);"; }
+            
+            let membersCount = Object.keys(team.members || {}).length;
+
+            html += `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; margin-bottom:10px; ${borderStyle} border-radius:12px;">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="font-size:22px; font-weight:900; color:#888; width:35px; text-align:center;">${rankIcon}</div>
+                    <div>
+                        <div style="font-weight:bold; color:#fff; font-size:15px; letter-spacing:0.5px;">${team.name} <span style="font-size:10px; color:#8a2be2;">(Code: ${team.id})</span></div>
+                        <div style="font-size:11px; color:#aaa; margin-top:3px;"><i class="fa-solid fa-users" style="color:#2e7dff;"></i> ${membersCount}/6 Players</div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#ffcc00; font-weight:900; font-size:17px;"><i class="fa-solid fa-star"></i> ${team.score || 0}</div>
+                </div>
+            </div>`;
+        });
+
+        if(teamsArr.length === 0) html = "<div class='empty'>No Squads created yet!</div>";
+        document.getElementById("leaderboardList").innerHTML = html;
+    });
+ }
+
+ // ==========================================
+ // 🏰 TOP GUILDS LEADERBOARD
+ // ==========================================
+ function loadGuildLeaderboard() {
+    // Baki Tab inactive kora r Guild tab active kora
+    document.getElementById("lbDaily").classList.remove("active");
+    document.getElementById("lbWeekly").classList.remove("active");
+    document.getElementById("lbMonthly").classList.remove("active");
+    let teamTab = document.getElementById("lbTeams"); if(teamTab) teamTab.classList.remove("active");
+    
+    let guildTab = document.getElementById("lbGuilds");
+    if(guildTab) guildTab.classList.add("active");
+
+    document.getElementById("leaderboardList").innerHTML = "<div class='empty'><i class='fa-solid fa-spinner fa-spin'></i> Loading Top Guilds...</div>";
+
+    db.ref("guilds").once("value", snap => {
+        let guildsArr = [];
+        snap.forEach(child => {
+            guildsArr.push(child.val());
+        });
+
+        // Score onujayi boro theke chhoto sajano (Sort)
+        guildsArr.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+        let html = "";
+        guildsArr.forEach((guild, index) => {
+            let rankIcon = `#${index + 1}`;
+            let borderStyle = "border:1px solid #333; background: #111;";
+            
+            // Top 3 Guild er jonno special design
+            if(index === 0) { rankIcon = "🏆"; borderStyle = "border:2px solid #ff4500; background: linear-gradient(90deg, #161a20, #330d00); box-shadow: 0 0 15px rgba(255,69,0,0.4);"; }
+            else if(index === 1) { rankIcon = "🥈"; borderStyle = "border:2px solid #C0C0C0; background: #1a1a1a;"; }
+            else if(index === 2) { rankIcon = "🥉"; borderStyle = "border:2px solid #cd7f32; background: #1a1410;"; }
+            
+            let membersCount = Object.keys(guild.members || {}).length;
+
+            // 👇 EI BLOCK TA VUL KORE DELETE HOYE GACHILO 👇
+            html += `
+            <div class="card" onclick="openGuildProfile('${guild.id}')" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:12px 16px; margin-bottom:10px; ${borderStyle} border-radius:12px; transition: transform 0.2s;">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="font-size:22px; font-weight:900; color:#888; width:35px; text-align:center;">${rankIcon}</div>
+                    <div>
+                        <div style="font-weight:bold; color:#ff4500; font-size:15px; letter-spacing:0.5px;">${guild.name}</div>
+                        <div style="font-size:11px; color:#aaa; margin-top:3px;"><i class="fa-solid fa-users" style="color:#2e7dff;"></i> ${membersCount}/50 Players <span style="margin-left:5px; color:#888;">(ID: ${guild.id})</span></div>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:#ffcc00; font-weight:900; font-size:17px;"><i class="fa-solid fa-star"></i> ${guild.score || 0}</div>
+                    <div style="font-size:9px; color:#888;">Guild Score</div>
+                </div>
+            </div>`;
+        });
+
+        if(guildsArr.length === 0) html = "<div class='empty'>No Guilds created yet!</div>";
+        document.getElementById("leaderboardList").innerHTML = html;
+    });
+ }
+
+
  function loadLeaderboard(timeFilter) {
     document.getElementById("lbDaily").classList.toggle("active", timeFilter === 'daily');
     document.getElementById("lbWeekly").classList.toggle("active", timeFilter === 'weekly');
     document.getElementById("lbMonthly").classList.toggle("active", timeFilter === 'monthly');
+    let teamTab = document.getElementById("lbTeams"); if(teamTab) teamTab.classList.remove("active");
+    let guildTab = document.getElementById("lbGuilds"); if(guildTab) guildTab.classList.remove("active");
 
     document.getElementById("leaderboardList").innerHTML = "<div class='empty'><i class='fa-solid fa-spinner fa-spin'></i> Loading Top Players...</div>";
 
@@ -1653,41 +2443,34 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         snap.forEach(userSnap => {
             let email = userSnap.key.replace(/_/g, '.');
             
-            // 🔥 NAME LOGIC: User-er set kora nam nibe, na thakle Email
-                        // VIP Crown Logic
             let savedName = userSnap.child("name").val(); 
             let baseName = savedName ? savedName : email.split('@')[0].substring(0, 8);
             
-            let vipExpiry = userSnap.child("vipExpiry").val();
-            let isVIP = (vipExpiry && vipExpiry > Date.now());
-            
-            // Jodi VIP hoy tahole namer pashe golden crown add hobe
-            let displayName = isVIP ? `${baseName} <i class="fa-solid fa-crown" style="color:#FFD700; margin-left:5px;" title="VIP Member"></i>` : baseName;
-
-
             let history = userSnap.child("history").val() || {};
-            let totalWon = 0;
+            let totalWonTimeframe = 0;
+            let totalWonAllTime = 0; 
             let matchesWon = 0;
 
             Object.values(history).forEach(h => {
                 if(h.type === "Match Win 🏆" && h.status === "Success" && h.reqId) {
+                    totalWonAllTime += parseInt(h.amount); 
                     let diffTime = now - h.reqId; 
                     let diffDays = diffTime / (1000 * 60 * 60 * 24);
-
                     let include = false;
                     if(timeFilter === 'daily' && diffDays <= 1) include = true;
                     if(timeFilter === 'weekly' && diffDays <= 7) include = true;
                     if(timeFilter === 'monthly' && diffDays <= 30) include = true;
-
                     if(include) {
-                        totalWon += parseInt(h.amount);
+                        totalWonTimeframe += parseInt(h.amount);
                         matchesWon++;
                     }
                 }
             });
 
-            if(totalWon > 0) {
-                leaderboard.push({name: displayName, won: totalWon, matches: matchesWon});
+            if(totalWonTimeframe > 0) {
+                let rank = getPlayerRank(totalWonAllTime);
+                let displayName = `${baseName} <span style="color:${rank.color}; font-size:14px; margin-left:6px; text-shadow: 0 0 10px ${rank.glow};" title="${rank.name}">${rank.icon}</span>`;
+                leaderboard.push({name: displayName, won: totalWonTimeframe, matches: matchesWon});
             }
         });
 
@@ -1953,6 +2736,8 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
  function adminPublishNotice() {
     let notice = document.getElementById("adminNoticeInput").value;
     db.ref("settings/announcement").set(notice);
+        sendToTelegramAdmin(`📢 APP NOTICE UPDATED\nNew Notice: ${notice || 'Cleared/Removed'}`);
+
     if(notice.trim() === "") {
         alert("Notice removed from app!");
     } else {
@@ -2194,6 +2979,7 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         maxClaims: maxUsers,  
         currentClaims: 0      
     });
+    sendToTelegramAdmin(`🎁 NEW GIFT CODE PUBLISHED\nCode: ${code}\nAmount: ₹${amt}\nMax Users: ${maxUsers}`);
     
     alert("Gift Code '" + code + "' Published for " + maxUsers + " Users! ⏳ Valid for 24h.");
     
@@ -2288,67 +3074,6 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         }
     });
  }
- // ==========================================
- // 👑 VIP MEMBERSHIP LOGIC
- // ==========================================
- function buyVIP() {
-    let user = localStorage.getItem("loggedUser");
-    if(!user) return alert("Please login first!");
-    let safeUser = safeKey(user);
-
-    db.ref("users/" + safeUser).once("value", snap => {
-        let userData = snap.val() || {};
-        let bal = userData.wallet || 0;
-        
-        // Jodi already VIP thake
-        let now = Date.now();
-        if (userData.vipExpiry && userData.vipExpiry > now) {
-            return alert("You are already a VIP Member! 👑");
-        }
-
-        // Taka check
-        if (bal < 49) {
-            return alert("❌ Insufficient Balance! Please add at least ₹49 to buy VIP.");
-        }
-
-        if(!confirm("Buy VIP Membership for ₹49? You will get 10% OFF on all match entry fees!")) return;
-
-        // Taka kata r VIP 30 diner jonno set kora
-        let thirtyDays = 30 * 24 * 60 * 60 * 1000; 
-        
-        db.ref("users/" + safeUser + "/wallet").set(bal - 49);
-        db.ref("users/" + safeUser + "/vipExpiry").set(now + thirtyDays);
-        
-        let histRef = db.ref("users/" + safeUser + "/history").push();
-        histRef.set({ amount: 49, type: "VIP Pass 👑", status: "Success", time: new Date().toLocaleString(), reqId: Date.now() });
-
-        alert("🎉 Congratulations! You are now a VIP Member. Enjoy 10% discounts and your Golden Crown!");
-        checkVIPStatus();
-    });
- }
-
- // UI Update (Login korle dekhabe se VIP kina)
- function checkVIPStatus() {
-    let user = localStorage.getItem("loggedUser");
-    if(!user) return;
-    let safeUser = safeKey(user);
-    
-    db.ref("users/" + safeUser + "/vipExpiry").on("value", snap => {
-        let expiry = snap.val();
-        let btn = document.getElementById("vipBtn");
-        let status = document.getElementById("vipStatus");
-        
-        if (btn && status) {
-            if (expiry && expiry > Date.now()) {
-                btn.style.display = "none";
-                status.style.display = "block";
-            } else {
-                btn.style.display = "block";
-                status.style.display = "none";
-            }
-        }
-    });
- }
 
  function shareOnWhatsApp() {
     let myCode = document.getElementById("myReferCode").innerText;
@@ -2399,34 +3124,102 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
         if(elPlayed) elPlayed.innerText = matchesPlayed;
         if(elWon) elWon.innerText = matchesWon;
         if(elRate) elRate.innerText = winRate + "%";
-
-        // 🔥 RANK & TIER SYSTEM LOGIC 🔥
+        
+                // 🔥 RANK & TIER SYSTEM LOGIC 🔥
         let rankBadge = document.getElementById("myRankBadge");
         if(rankBadge) {
-            if (totalEarnings >= 1000) {
-                rankBadge.innerText = "GRANDMASTER 🔴";
-                rankBadge.style.background = "linear-gradient(45deg, #ff0000, #880000)";
-                rankBadge.style.boxShadow = "0 0 15px rgba(255, 0, 0, 0.6)";
-            } else if (totalEarnings >= 500) {
-                rankBadge.innerText = "HEROIC 🟣";
-                rankBadge.style.background = "linear-gradient(45deg, #8a2be2, #4b0082)";
-                rankBadge.style.boxShadow = "0 0 15px rgba(138, 43, 226, 0.6)";
-            } else if (totalEarnings >= 200) {
-                rankBadge.innerText = "GOLD 🟡";
-                rankBadge.style.background = "linear-gradient(45deg, #FFD700, #FFA500)";
-                rankBadge.style.boxShadow = "0 0 15px rgba(255, 215, 0, 0.6)";
-            } else if (totalEarnings >= 50) {
-                rankBadge.innerText = "SILVER ⚪";
-                rankBadge.style.background = "linear-gradient(45deg, #C0C0C0, #808080)";
-                rankBadge.style.boxShadow = "0 0 15px rgba(192, 192, 192, 0.6)";
-            } else {
-                rankBadge.innerText = "BRONZE 🟤";
-                rankBadge.style.background = "linear-gradient(45deg, #cd7f32, #8a5a22)";
-                rankBadge.style.boxShadow = "0 0 10px rgba(205, 127, 50, 0.5)";
-            }
+            let rank = getPlayerRank(totalEarnings); 
+            rankBadge.innerHTML = `${rank.icon} ${rank.name}`;
+            rankBadge.style.background = rank.grad;
+            rankBadge.style.boxShadow = `0 0 10px ${rank.glow}`;
+            rankBadge.style.color = "#fff";
         }
     });
  }
+
+ // ==========================================
+ // 🌍 GLOBAL WORLD CHAT (24H Auto Delete)
+ // ==========================================
+ function sendGlobalMessage() {
+    let msgInput = document.getElementById("chatInputMsg");
+    let msg = msgInput.value.trim();
+    if(!msg) return; // Faka message atkano
+
+    let userEmail = localStorage.getItem("loggedUser");
+    if(!userEmail) return alert("Please login to chat!");
+    let safeUser = safeKey(userEmail);
+
+    // Message pathanor aage button ta 'Sending...' kora
+    let sendBtn = msgInput.nextElementSibling;
+    sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    sendBtn.disabled = true;
+
+    // Database theke player er nam ana
+    db.ref("users/" + safeUser + "/name").once("value", snap => {
+        let playerName = snap.val() || userEmail.split('@')[0].substring(0, 8); // Nam na thakle email nibe
+        
+        let chatRef = db.ref("world_chat").push();
+        chatRef.set({
+            name: playerName,
+            email: userEmail,
+            message: msg,
+            time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+            timestamp: Date.now() // 🔥 Eta diyei auto-delete hobe
+        }).then(() => {
+            msgInput.value = ""; 
+            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            sendBtn.disabled = false;
+        });
+    });
+ }
+
+ function loadGlobalChat() {
+    db.ref("world_chat").on("value", snap => {
+        let html = "";
+        let now = Date.now();
+        let myEmail = localStorage.getItem("loggedUser");
+
+        snap.forEach(childSnap => {
+            let key = childSnap.key;
+            let data = childSnap.val();
+            let msgTime = data.timestamp || 0;
+            let diffHours = (now - msgTime) / (1000 * 60 * 60);
+
+            // 🔴 24 Hour Auto-Delete 🔴
+            if (diffHours > 24) {
+                db.ref("world_chat/" + key).remove();
+            } else {
+                let isMe = data.email === myEmail;
+                
+                // 🔥 THE GAMING VIBE UI 🔥
+                let align = isMe ? "align-self: flex-end;" : "align-self: flex-start;";
+                let bgStyle = isMe ? "background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 85, 255, 0.2)); border-right: 3px solid #00d4ff;" : "background: rgba(28, 34, 43, 0.8); border-left: 3px solid #ffcc00;";
+                let nameColor = isMe ? "#00d4ff" : "#ffcc00";
+                let msgColor = isMe ? "#fff" : "#eee";
+                let shadow = isMe ? "box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);" : "box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
+                let icon = isMe ? '<i class="fa-solid fa-user-astronaut"></i>' : '<i class="fa-solid fa-headset"></i>';
+
+                html += `
+                <div style="max-width:85%; padding:10px 15px; border-radius:6px; ${align} ${bgStyle} ${shadow} backdrop-filter: blur(4px);">
+                    <div style="font-size:10px; color:${nameColor}; font-weight:900; margin-bottom:4px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:5px;">
+                        ${icon} ${isMe ? "You" : data.name}
+                    </div>
+                    <div style="font-size:13px; color:${msgColor}; word-break: break-word; font-family: 'Courier New', Courier, monospace; font-weight:bold; text-shadow: 0 0 2px rgba(255,255,255,0.2);">${data.message}</div>
+                    <div style="font-size:9px; color:#666; text-align:right; margin-top:5px; font-family:monospace;">[${data.time}]</div>
+                </div>`;
+            }
+        });
+
+        let chatBox = document.getElementById("chatBox");
+        if(html === "") html = "<div class='empty' style='color:#00d4ff; font-family:monospace; text-shadow:0 0 5px #00d4ff;'>SERVER EMPTY. BE THE FIRST TO TRANSMIT.</div>";
+        chatBox.innerHTML = html;
+
+        setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 100);
+    });
+ }
+
+
+
  // ==========================================
  // 🚀 SPLASH SCREEN REMOVER LOGIC
  // ==========================================
@@ -2442,8 +3235,234 @@ header{ padding:15px 20px; display:flex; justify-content:space-between; align-it
     }, 1500); // Dedh second (1.5s) loading dekhabe
  };
 
+  function adminToggleBan(email, currentlyBanned) {
+    let safeUser = safeKey(email);
+    let action = currentlyBanned ? "UNBAN" : "BAN";
+    if(!confirm(`Are you sure you want to ${action} ${email}?`)) return;
+    
+    db.ref("users/" + safeUser + "/banned").set(!currentlyBanned);
+    alert(`User ${email} has been ${action}NED!`);
+ }
+ function copyText(text, type) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert(type + " Copied! 👉 " + text);
+    }).catch(err => {
+        alert("Failed to copy!");
+    });
+ }
+
+ // ==========================================
+ // 💬 PRIVATE SQUAD & GUILD CHAT (24H AUTO DELETE)
+ // ==========================================
+
+ let currentActiveChatId = ""; // Track korar jonno kon chat khola achhe
+
+ // --- TEAM CHAT ---
+ function closeTeamChat() { document.getElementById("teamChatModal").style.display = "none"; currentActiveChatId = ""; }
+ function openTeamChat(teamId) {
+    currentActiveChatId = teamId;
+    document.getElementById("teamChatModal").style.display = "flex";
+    
+    // Send button-e event listener bosano
+    document.getElementById("teamChatSendBtn").onclick = () => sendPrivateMessage("team_chats", teamId, "teamChatInput", "teamChatSendBtn");
+    
+    // Live Chat Load
+    loadPrivateChat("team_chats", teamId, "teamChatBox", "#8a2be2");
+ }
+
+ // --- GUILD CHAT ---
+ function closeGuildChat() { document.getElementById("guildChatModal").style.display = "none"; currentActiveChatId = ""; }
+ function openGuildChat(guildId) {
+    currentActiveChatId = guildId;
+    document.getElementById("guildChatModal").style.display = "flex";
+    
+    document.getElementById("guildChatSendBtn").onclick = () => sendPrivateMessage("guild_chats", guildId, "guildChatInput", "guildChatSendBtn");
+    
+    loadPrivateChat("guild_chats", guildId, "guildChatBox", "#ff4500");
+ }
+
+ // --- MASTER ENGINE FOR SENDING ---
+ function sendPrivateMessage(dbNode, chatId, inputId, btnId) {
+    let msgInput = document.getElementById(inputId);
+    let msg = msgInput.value.trim();
+    if(!msg) return;
+
+    let userEmail = localStorage.getItem("loggedUser");
+    let safeUser = safeKey(userEmail);
+    let sendBtn = document.getElementById(btnId);
+    
+    sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    sendBtn.disabled = true;
+
+    db.ref("users/" + safeUser + "/name").once("value", snap => {
+        let playerName = snap.val() || userEmail.split('@')[0].substring(0, 8);
+        
+        db.ref(dbNode + "/" + chatId).push().set({
+            name: playerName,
+            email: userEmail,
+            message: msg,
+            time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+            timestamp: Date.now()
+        }).then(() => {
+            msgInput.value = ""; 
+            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            sendBtn.disabled = false;
+        }).catch(err => {
+            alert("Error sending message!");
+            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+            sendBtn.disabled = false;
+        });
+    });
+ }
+
+ // --- MASTER ENGINE FOR LOADING & 24H DELETE ---
+ function loadPrivateChat(dbNode, chatId, boxId, themeColor) {
+    db.ref(dbNode + "/" + chatId).on("value", snap => {
+        // Jodi anyo kono modal khola thake tahole background e load hobena
+        if(currentActiveChatId !== chatId) return; 
+
+        let html = "";
+        let now = Date.now();
+        let myEmail = localStorage.getItem("loggedUser");
+
+        snap.forEach(childSnap => {
+            let key = childSnap.key;
+            let data = childSnap.val();
+            let msgTime = data.timestamp || 0;
+            let diffHours = (now - msgTime) / (1000 * 60 * 60);
+
+            // 🔴 24 HOUR AUTO-DELETE 🔴
+            if (diffHours > 24) {
+                db.ref(dbNode + "/" + chatId + "/" + key).remove(); 
+            } else {
+                let isMe = data.email === myEmail;
+                // Gaming Vibe CSS for bubbles
+                let align = isMe ? "align-self: flex-end;" : "align-self: flex-start;";
+                let bgStyle = isMe ? `background: linear-gradient(135deg, ${themeColor}, #111); border-right: 3px solid #fff;` : "background: #1a1c23; border-left: 3px solid " + themeColor + ";";
+                let nameColor = isMe ? "#fff" : themeColor;
+                let msgColor = isMe ? "#fff" : "#ddd";
+                
+                html += `
+                <div style="max-width:85%; padding:10px 15px; border-radius:6px; ${align} ${bgStyle} box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                    <div style="font-size:10px; color:${nameColor}; font-weight:900; margin-bottom:4px; text-transform:uppercase; letter-spacing:1px;">${isMe ? "You" : data.name}</div>
+                    <div style="font-size:13px; color:${msgColor}; word-break: break-word; font-family:monospace; font-weight:bold;">${data.message}</div>
+                    <div style="font-size:9px; color:#888; text-align:right; margin-top:5px;">${data.time}</div>
+                </div>`;
+            }
+        });
+
+        let chatBox = document.getElementById(boxId);
+        if(html === "") html = `<div class='empty' style='color:${themeColor};'>RADIO SILENCE. No comms yet.</div>`;
+        chatBox.innerHTML = html;
+
+        setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 100);
+    });
+ }
+
+ // ==========================================
+ // 📺 E-SPORTS TV ENGINE (MULTIPLE VIDEOS)
+ // ==========================================
+ // 1. Link theke ID ber kora (Shorts & Live Supported)
+ function extractVideoID(url) {
+    let regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+    let match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+ }
+
+
+ // 2. Admin theke Notun Video Add Kora
+ window.adminAddTvVideo = function() {
+    let title = document.getElementById("adminTvTitle").value.trim();
+    let link = document.getElementById("adminTvLink").value.trim();
+    let type = document.getElementById("adminTvType").value;
+    
+    if(!title || !link) return alert("Please enter Title and Link!");
+    
+    let vidId = extractVideoID(link);
+    if(!vidId) return alert("Invalid YouTube Link!");
+    
+    db.ref("esports_tv").push().set({
+        title: title,
+        vidId: vidId,
+        type: type,
+        timestamp: Date.now()
+    }).then(() => {
+        alert("Success! Video added to E-Sports TV.");
+        document.getElementById("adminTvTitle").value = "";
+        document.getElementById("adminTvLink").value = "";
+    });
+ }
+
+ // 3. Admin theke Video Delete Kora
+ window.adminDeleteTvVideo = function(key) {
+    if(confirm("Are you sure you want to remove this video from TV?")) {
+        db.ref("esports_tv/" + key).remove();
+    }
+ }
+
+ // 4. Realtime TV Load kora (Player & Admin UI)
+ db.ref("esports_tv").on("value", snap => {
+    let tvHtml = "";
+    let adminHtml = "";
+    let videos = [];
+    
+    snap.forEach(child => {
+        videos.push({ key: child.key, data: child.val() });
+    });
+    
+    // Notun video upore anar jonno sort
+    videos.sort((a, b) => b.data.timestamp - a.data.timestamp);
+
+    videos.forEach(v => {
+        let badgeColor = v.data.type === "LIVE" ? "#ff0055" : "#2e7dff";
+        let badgeText = v.data.type === "LIVE" ? "🔴 LIVE NOW" : "🎬 HIGHLIGHT";
+        let glow = v.data.type === "LIVE" ? "box-shadow: 0 0 20px rgba(255,0,85,0.4);" : "box-shadow: 0 0 15px rgba(46,125,255,0.3);";
+        let border = v.data.type === "LIVE" ? "border: 2px solid #ff0055;" : "border: 2px solid #2e7dff;";
+
+        // Player der jonno TV Design
+        tvHtml += `
+        <div style="background:#111; ${border} ${glow} border-radius:12px; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(0,0,0,0.5);">
+                <div style="color:#fff; font-weight:bold; font-size:14px; text-transform:uppercase;">${v.data.title}</div>
+                <div style="background:${badgeColor}; color:#fff; font-size:10px; font-weight:bold; padding:3px 8px; border-radius:4px;">${badgeText}</div>
+            </div>
+            <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; background:#000;">
+                <iframe src="https://www.youtube.com/embed/${v.data.vidId}?rel=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allowfullscreen loading="lazy"></iframe>
+            </div>
+        </div>`;
+        
+        // Admin er jonno Delete UI
+        adminHtml += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#1c222b; padding:8px; border-radius:6px; margin-bottom:5px; border-left:3px solid ${badgeColor};">
+            <div style="color:#fff; font-size:12px; font-weight:bold;">${v.data.title}</div>
+            <button onclick="adminDeleteTvVideo('${v.key}')" style="background:#ff0055; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+        </div>`;
+    });
+
+    let tvSection = document.getElementById("tvVideoList");
+    if(tvSection) {
+        if(videos.length === 0) tvSection.innerHTML = "<div class='empty' style='color:#666;'>No broadcasts available right now.</div>";
+        else tvSection.innerHTML = tvHtml;
+    }
+    
+    let adminSection = document.getElementById("adminTvActiveList");
+    if(adminSection) {
+        if(videos.length === 0) adminSection.innerHTML = "<div style='color:#666; font-size:12px;'>No videos on TV.</div>";
+        else adminSection.innerHTML = adminHtml;
+    }
+ });
+
+ // Update showPage function to handle tvPage
+ let originalShowPage = showPage;
+ showPage = function(pageId, element) {
+    originalShowPage(pageId, element);
+    if(pageId === "tvPage") {
+        window.scrollTo(0,0);
+    }
+ };
+
 
 </script>
 
 </body>
- </html>
+                                                                                                                                                                                                          </html>
